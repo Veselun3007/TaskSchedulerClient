@@ -1,0 +1,31 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskSchedulerClient.Models
+{
+    /// <summary>
+    /// Клас, що описує модель реєстрації
+    /// </summary>
+    public class RegisterModel
+    {
+        [Display(Name = "Логін")]
+        [Required(ErrorMessage = "Не вказаний логін")]
+        [StringLength(40, MinimumLength = 5,
+            ErrorMessage = "Введіть логін довжиною від 5 до 40 символів")]
+        public string UserName { get; set; }
+
+        [Display(Name = "Електрона пошта")]
+        [Required(ErrorMessage = "Не вказаний Email")]
+        [DataType(DataType.EmailAddress)]
+        public string UserEmail { get; set; }
+
+        [Display(Name = "Пароль")]
+        [Required(ErrorMessage = "Не вказаний пароль")]
+        [DataType(DataType.Password)]
+        public string UserPassword { get; set; }
+
+        [Display(Name = "Підтвердіть пароль пароль")]
+        [DataType(DataType.Password)]
+        [Compare("UserPassword", ErrorMessage = "Пароль введено невірно")]
+        public string ConfirmPassword { get; set; }
+    }
+}

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using TaskSchedulerClient.Models.Interfaces;
 
 namespace TaskSchedulerClient.Models
 {
     /// <summary>
     /// Клас, що описує таблицю User
     /// </summary>
-    public class User
+    public class User : IUser
     {
         public int UserId { get; set; }
 

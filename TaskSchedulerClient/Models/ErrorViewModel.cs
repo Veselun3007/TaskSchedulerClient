@@ -1,5 +1,3 @@
-using System;
-
 namespace TaskSchedulerClient.Models
 {
     public class ErrorViewModel

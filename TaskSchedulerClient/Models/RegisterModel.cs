@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TaskSchedulerClient.Models.Interfaces;
 
 namespace TaskSchedulerClient.Models
 {
     /// <summary>
     /// Клас, що описує модель реєстрації
     /// </summary>
-    public class RegisterModel
+    public class RegisterModel : IUser
     {
         [Display(Name = "Логін")]
         [Required(ErrorMessage = "Не вказаний логін")]

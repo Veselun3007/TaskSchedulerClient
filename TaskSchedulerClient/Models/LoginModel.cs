@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TaskSchedulerClient.Models.Interfaces;
 
 namespace TaskSchedulerClient.Models
 {
     /// <summary>
     /// Клас, що описує модель аутентифікація
     /// </summary>
-    public class LoginModel
+    public class LoginModel : IUser
     {
 
         [Display(Name = "Логін")]
@@ -17,13 +18,13 @@ namespace TaskSchedulerClient.Models
         [DataType(DataType.Password)]
         public string UserPassword { get; set; }
 
-        public static explicit operator LoginModel(User obj)
-        {
-            return new LoginModel()
-            {
-                UserName = obj.UserName,
-                UserPassword = obj.UserPassword,
-            };
-        }
+        //public static explicit operator LoginModel(User obj)
+        //{
+        //    return new LoginModel()
+        //    {
+        //        UserName = obj.UserName,
+        //        UserPassword = obj.UserPassword,
+        //    };
+        //}
     }
 }

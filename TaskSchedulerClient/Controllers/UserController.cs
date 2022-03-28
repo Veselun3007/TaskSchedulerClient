@@ -57,27 +57,6 @@ namespace TaskSchedulerClient.Controllers
         }
         #endregion
 
-        #region *** Get User Info ***
-
-        public async Task<User> GetUserAsync(LoginModel model)
-        {
-            using var client = CreateClientWithToken(_configuration["JWTtoken"]);
-            client.DefaultRequestHeaders.Add("userPublicKey", _configuration["PublicKey"]);
-            var response = await client.GetAsync(_configuration["ConnectionAPI:Path"] + "/api/User/GetUser");
-            var result = await response.Content.ReadAsAsync<User>();
-            return result;
-        }
-
-        private static HttpClient CreateClientWithToken(string token)
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.
-                    AuthenticationHeaderValue("Bearer", token);
-            return client;
-        }
-
-        #endregion
-
         #region *** Get All Assignment ***
         private List<Assignment> GetAll(HttpClient client)
         {
@@ -115,7 +94,7 @@ namespace TaskSchedulerClient.Controllers
             {
                 try
                 {
-                     await AddData(assignment);
+                    await AddData(assignment);
                 }
                 catch (Exception ex)
                 {
@@ -137,7 +116,7 @@ namespace TaskSchedulerClient.Controllers
                 AssignmentDescription = assignment.AssignmentDescription,
                 AssignmentTime = assignment.AssignmentTime,
                 AssignmentState = null,
-                UserID = assignment.UserID
+                UserId = 0
             };
             return entityObject;
         }
@@ -147,10 +126,13 @@ namespace TaskSchedulerClient.Controllers
             HttpClient client = ConnectToApi();
 
             CreateAssignmentUserObj(assignment);
+            await PostAsync(assignment, client);
+        }
 
-            await client.PostAsJsonAsync(_configuration["ConnectionAPI:Path"] +
+        private async Task PostAsync(AssignmentEditModel assignment, HttpClient client)
+        {
+            await client.PostAsJsonAsync(_configuration["ConnectionAPI:Path"] + 
                 "/api/Assignment/CreateAssignment", assignment);
-
         }
 
         #endregion
@@ -160,7 +142,7 @@ namespace TaskSchedulerClient.Controllers
         public IActionResult Update(int id)
         {
             AssignmentEditModel assignmentEdit =
-                AssignmentEditModels.First(e => e.AssignmentID == id);
+                AssignmentEditModels.First(e => e.AssignmentId == id);
 
             return View(assignmentEdit);
         }
@@ -168,6 +150,7 @@ namespace TaskSchedulerClient.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(AssignmentEditModel assignment)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(assignment);
@@ -188,13 +171,17 @@ namespace TaskSchedulerClient.Controllers
             HttpClient client = ConnectToApi();
 
             var entityObj = Assignments.
-                First(e => e.AssignmentID == assignment.AssignmentID);
+                First(e => e.AssignmentId == assignment.AssignmentId);
 
             UpdateAssignmentUserObj(entityObj, assignment);
+            await PutAsync(assignment, client);
 
-            await client.PutAsJsonAsync(_configuration["ConnectionAPI:Path"] +
+        }
+
+        private async Task PutAsync(AssignmentEditModel assignment, HttpClient client)
+        {
+            await client.PutAsJsonAsync(_configuration["ConnectionAPI:Path"] + 
                 "/api/Assignment/UpdateAssignment", assignment);
-
         }
 
         private static void UpdateAssignmentUserObj(Assignment entityObj,
@@ -204,7 +191,7 @@ namespace TaskSchedulerClient.Controllers
             entityObj.AssignmentDescription = assignment.AssignmentDescription;
             entityObj.AssignmentTime = assignment.AssignmentTime;
             entityObj.AssignmentState = assignment.AssignmentState;
-            entityObj.UserID = assignment.UserID;
+            entityObj.UserId = assignment.UserId;
 
         }
 
@@ -216,7 +203,7 @@ namespace TaskSchedulerClient.Controllers
         {
 
             AssignmentEditModel assignment =
-               AssignmentEditModels.First(e => e.AssignmentID == id);
+               AssignmentEditModels.First(e => e.AssignmentId == id);
 
             return View(assignment);
         }
@@ -225,11 +212,15 @@ namespace TaskSchedulerClient.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             HttpClient client = ConnectToApi();
-
-            await client.DeleteAsync(_configuration["ConnectionAPI:Path"] +
-                $"/api/Assignment/DeleteAssignment/{id}");
+            await DeleteAsync(id, client);
 
             return RedirectToAction("Index");
+        }
+
+        private async Task DeleteAsync(string id, HttpClient client)
+        {
+            await client.DeleteAsync(_configuration["ConnectionAPI:Path"] + 
+                $"/api/Assignment/DeleteAssignment/{id}");
         }
 
         #endregion

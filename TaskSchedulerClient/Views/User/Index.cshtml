@@ -19,7 +19,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.AssignmentID)
+                @Html.DisplayNameFor(model => model.AssignmentId)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.AssignmentName)
@@ -34,7 +34,7 @@
                 @Html.DisplayNameFor(model => model.AssignmentState)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UserID)
+                @Html.DisplayNameFor(model => model.UserId)
             </th>
             <th></th>
         </tr>
@@ -43,7 +43,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.AssignmentID)
+                @Html.DisplayFor(modelItem => item.AssignmentId)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AssignmentName)
@@ -58,11 +58,11 @@
                 @Html.DisplayFor(modelItem => item.AssignmentState)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UserID)
+                @Html.DisplayFor(modelItem => item.UserId)
             </td>
             <td> |
-                @Html.ActionLink("Edit", "Update", new { id = item.AssignmentID }) |
-                @Html.ActionLink("Delete", "Delete", new {  id=item.AssignmentID  })
+                @Html.ActionLink("Edit", "Update", new { id = item.AssignmentId }) |
+                @Html.ActionLink("Delete", "Delete", new {  id=item.AssignmentId  })
             </td>
         </tr>
 }

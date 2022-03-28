@@ -57,6 +57,27 @@ namespace TaskSchedulerClient.Controllers
         }
         #endregion
 
+        #region *** Get User Info ***
+
+        public async Task<User> GetUserAsync(LoginModel model)
+        {
+            using var client = CreateClientWithToken(_configuration["JWTtoken"]);
+            client.DefaultRequestHeaders.Add("userPublicKey", _configuration["PublicKey"]);
+            var response = await client.GetAsync(_configuration["ConnectionAPI:Path"] + "/api/User/GetUser");
+            var result = await response.Content.ReadAsAsync<User>();
+            return result;
+        }
+
+        private static HttpClient CreateClientWithToken(string token)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.
+                    AuthenticationHeaderValue("Bearer", token);
+            return client;
+        }
+
+        #endregion
+
         #region *** Get All Assignment ***
         private List<Assignment> GetAll(HttpClient client)
         {

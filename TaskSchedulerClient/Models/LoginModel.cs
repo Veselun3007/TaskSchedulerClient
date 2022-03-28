@@ -8,6 +8,7 @@ namespace TaskSchedulerClient.Models
     /// </summary>
     public class LoginModel : IUser
     {
+        public LoginModel() {}
 
         [Display(Name = "Логін")]
         [Required(ErrorMessage = "Не вказаний логін")]
@@ -18,13 +19,5 @@ namespace TaskSchedulerClient.Models
         [DataType(DataType.Password)]
         public string UserPassword { get; set; }
 
-        //public static explicit operator LoginModel(User obj)
-        //{
-        //    return new LoginModel()
-        //    {
-        //        UserName = obj.UserName,
-        //        UserPassword = obj.UserPassword,
-        //    };
-        //}
     }
 }

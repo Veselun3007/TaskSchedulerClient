@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using TaskSchedulerClient.Models;
 using TaskSchedulerClient.CryptographyMethods;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TaskSchedulerClient.Controllers
 {
@@ -32,6 +32,7 @@ namespace TaskSchedulerClient.Controllers
 
         #endregion
 
+        #region *** Get public API key
         private async Task GetAPIPublicKey()
         {
             using var client = new HttpClient();
@@ -39,11 +40,11 @@ namespace TaskSchedulerClient.Controllers
                     "/api/User/GetPublicKey").Result;
             _configuration["APIkey"] = await response.Content.ReadAsStringAsync();
         }
-
+        #endregion
 
         #region *** Login ***
 
-       [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Login()
         {
             await GetAPIPublicKey();
@@ -77,9 +78,10 @@ namespace TaskSchedulerClient.Controllers
 
         private async Task<HttpResponseMessage> LogIn(LoginModel loginModel, HttpClient client)
         {
-            return (await client.PostAsJsonAsync(
-                _configuration["ConnectionAPI:Path"] + "/api/Auth/Auth", 
-                (object)_cryptography.RSA_Encrypt_IUser(loginModel, _configuration["APIkey"])));
+
+            return await client.PostAsJsonAsync( 
+                _configuration["ConnectionAPI:Path"] + "/api/Auth/Auth",
+                _cryptography.RSA_Encrypt_IUser(loginModel, _configuration["APIkey"]));
         }
 
         private static Dictionary<string, string> ExtractToken(HttpResponseMessage response)
@@ -120,11 +122,12 @@ namespace TaskSchedulerClient.Controllers
             {
                 using var client = new HttpClient();
                 await UserRegister(registerModel, client);
-                GetToken(registerModel, client);
+
+                await GetToken(registerModel, client);
 
                 return RedirectToAction("Index", "User");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.ToString());
                 return View(registerModel);
@@ -133,8 +136,10 @@ namespace TaskSchedulerClient.Controllers
 
         private async Task UserRegister(RegisterModel registerModel, HttpClient client)
         {
-            await client.PostAsJsonAsync(_configuration["ConnectionAPI:Path"] 
-                + "/api/User/Post", registerModel);
+
+            await client.PostAsJsonAsync(
+                _configuration["ConnectionAPI:Path"] + "/api/User/CreateUser", 
+                _cryptography.RSA_Encrypt_IUser(registerModel, _configuration["APIkey"]));
         }
 
         /// <summary>
@@ -144,17 +149,19 @@ namespace TaskSchedulerClient.Controllers
         /// <param name="registerModel"></param>
         /// <param name="client"></param>
         /// <returns>Повертає токен</returns>
-        private void GetToken(RegisterModel registerModel, HttpClient client)
+        private async Task GetToken(RegisterModel registerModel, HttpClient client)
         {
             LoginModel loginModel = CreatAuthUser(registerModel);
-
-            var response = client.PostAsJsonAsync(_configuration["ConnectionAPI:Path"] +
-                "/api/Auth/Auth", loginModel).Result;
-
-            Dictionary<string, string> dictionaryResult = JsonConvert.DeserializeObject
-              <Dictionary<string, string>>(response.Content.ReadAsStringAsync().Result);
-
+            HttpResponseMessage response = await SingUp(client, loginModel);
+            
+            Dictionary<string, string> dictionaryResult = ExtractToken(response);
             _configuration["JWTtoken"] = dictionaryResult["token"];
+        }
+
+        private async Task<HttpResponseMessage> SingUp(HttpClient client, LoginModel loginModel)
+        {
+            return await client.PostAsJsonAsync(
+                  _configuration["ConnectionAPI:Path"] + "/api/Auth/Auth", loginModel);
         }
 
         private static LoginModel CreatAuthUser(RegisterModel registerModel)
@@ -172,7 +179,8 @@ namespace TaskSchedulerClient.Controllers
             {
                 UserName = registerModel.UserName,
                 UserEmail = registerModel.UserEmail,
-                UserPassword = registerModel.UserPassword
+                UserPassword = registerModel.UserPassword,
+                UserImage = new byte[0]
             };
             return entityObject;
         }

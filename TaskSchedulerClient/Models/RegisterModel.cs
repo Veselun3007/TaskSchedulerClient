@@ -8,10 +8,12 @@ namespace TaskSchedulerClient.Models
     /// </summary>
     public class RegisterModel : IUser
     {
+        public RegisterModel() {}
+
         [Display(Name = "Логін")]
         [Required(ErrorMessage = "Не вказаний логін")]
-        [StringLength(40, MinimumLength = 5,
-            ErrorMessage = "Введіть логін довжиною від 5 до 40 символів")]
+        [StringLength(53, MinimumLength = 5,
+            ErrorMessage = "Введіть логін довжиною від 5 до 53 символів")]
         public string UserName { get; set; }
 
         [Display(Name = "Електрона пошта")]
@@ -28,5 +30,7 @@ namespace TaskSchedulerClient.Models
         [DataType(DataType.Password)]
         [Compare("UserPassword", ErrorMessage = "Пароль введено невірно")]
         public string ConfirmPassword { get; set; }
+
+        public byte[] UserImage { get; set; }
     }
 }

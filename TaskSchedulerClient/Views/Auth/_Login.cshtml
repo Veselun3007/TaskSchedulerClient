@@ -1,0 +1,14 @@
+﻿@model TaskSchedulerClient.Models.LoginModel
+
+
+				<form asp-action="Login">
+					<label for="chk" aria-hidden="true">Login</label>
+
+					<input type="text" name="UserName" placeholder="YourName" required="">
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+
+					<input type="password" name="UserPassword" placeholder="Password" required="">
+                    <span asp-validation-for="UserPassword" class="text-danger"></span>
+
+					<button type="submit">Login</button>
+				</form>

@@ -52,13 +52,15 @@ namespace TaskSchedulerClient.CryptographyMethods
 
         /// <summary>
         /// Шифрує пароль об'єкта user, що наслідує інтерфейс IUser
+        /// 
         /// </summary>
         /// <param name="user">Об'єкт, що наслідує інтерфейс IUser, 
         /// пароль якого шифрується</param>
         /// <param name="key"></param>
         public object RSA_Encrypt_IUser(IUser user, string key)
         {
-            return user.UserPassword = RSA_Encrypt(user.UserPassword, key);
+            user.UserPassword = RSA_Encrypt(user.UserPassword, _configuration["APIkey"]);
+            return user;
         }
         #endregion
 
@@ -85,7 +87,7 @@ namespace TaskSchedulerClient.CryptographyMethods
         /// використовуючи закритий ключ API
         /// </summary>
         /// <param name="user">Об'єкт, що наслідує інтерфейс IUser, 
-        /// пароль якого потрібно дешифрувати</param
+        /// пароль якого потрібно дешифрувати</param>
         public void RSA_Decrypt_IUser(IUser user)
         {
             user.UserPassword = RSA_Decrypt(user.UserPassword,

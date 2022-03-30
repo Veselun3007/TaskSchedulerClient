@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/buttons/delete.css" />
 </head>
 <body>
 <p>
@@ -60,13 +60,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.UserId)
             </td>
-            <td> |
-                @Html.ActionLink("Edit", "Update", new { id = item.AssignmentId }) |
-                @Html.ActionLink("Delete", "Delete", new {  id=item.AssignmentId  })
+            <td>
+                <a asp-controller="User" asp-action="Update" asp-route-id="@item.AssignmentId"> Edit</a>
+                <a class="btn a-delete" asp-controller="User" asp-action="Delete" asp-route-id="@item.AssignmentId"> <span></span><text>Delete</text></a>
+
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+<script src="~/js/personalOffice/buttons/delete.js"></script>
+
 </body>
 </html>

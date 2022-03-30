@@ -147,7 +147,7 @@ namespace TaskSchedulerClient.Controllers
             return View(assignmentEdit);
         }
 
-        [HttpPost]
+       [HttpPost]
         public async Task<IActionResult> Update(AssignmentEditModel assignment)
         {
 
@@ -199,17 +199,8 @@ namespace TaskSchedulerClient.Controllers
 
         #region *** Delete ***
 
-        public IActionResult Delete(int id)
-        {
-
-            AssignmentEditModel assignment =
-               AssignmentEditModels.First(e => e.AssignmentId == id);
-
-            return View(assignment);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
         {
             HttpClient client = ConnectToApi();
             await DeleteAsync(id, client);
@@ -217,7 +208,7 @@ namespace TaskSchedulerClient.Controllers
             return RedirectToAction("Index");
         }
 
-        private async Task DeleteAsync(string id, HttpClient client)
+        private async Task DeleteAsync(int id, HttpClient client)
         {
             await client.DeleteAsync(_configuration["ConnectionAPI:Path"] + 
                 $"/api/Assignment/DeleteAssignment/{id}");

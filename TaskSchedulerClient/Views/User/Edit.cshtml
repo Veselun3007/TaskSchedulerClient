@@ -9,7 +9,6 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Update</title>
 </head>
 <body>
 
@@ -17,24 +16,28 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Update">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Edit">
+            <div class="text-danger"></div>
+
+
             <div class="form-group">
                 <input asp-for="AssignmentId" class="form-control" type="hidden"/>
             </div>
+
+
             <div class="form-group">
                 <label asp-for="AssignmentName" class="control-label"></label>
-                <input asp-for="AssignmentName" class="form-control" />
+                <input asp-for="AssignmentName" class="form-control" required/>
                 <span asp-validation-for="AssignmentName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="AssignmentDescription" class="control-label"></label>
-                <input asp-for="AssignmentDescription" class="form-control" />
+                <input asp-for="AssignmentDescription" class="form-control" required/>
                 <span asp-validation-for="AssignmentDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="AssignmentTime" class="control-label"></label>
-                <input asp-for="AssignmentTime" class="form-control" />
+                <input asp-for="AssignmentTime" class="form-control" required/>
                 <span asp-validation-for="AssignmentTime" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
@@ -42,10 +45,11 @@
                     <input class="form-check-input" asp-for="AssignmentState" /> @Html.DisplayNameFor(model => model.AssignmentState)
                 </label>
             </div>
-            <div class="form-group">
 
+            <div class="form-group">
                 <input asp-for="UserId" class="form-control" type="hidden"/>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

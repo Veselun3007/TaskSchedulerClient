@@ -71,7 +71,7 @@ namespace TaskSchedulerClient.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.ToString());
+                ModelState.AddModelError("", ex.Message);
                 return View(loginModel);
             }
         }
@@ -81,7 +81,7 @@ namespace TaskSchedulerClient.Controllers
 
             return await client.PostAsJsonAsync( 
                 _configuration["ConnectionAPI:Path"] + "/api/Auth/Auth",
-                _cryptography.RSA_Encrypt_IUser(loginModel, _configuration["APIkey"]));
+                _cryptography.RSAEncryptIUser(loginModel, _configuration["APIkey"]));
         }
 
         private static Dictionary<string, string> ExtractToken(HttpResponseMessage response)
@@ -129,7 +129,7 @@ namespace TaskSchedulerClient.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.ToString());
+                ModelState.AddModelError("", ex.Message);
                 return View(registerModel);
             }
         }
@@ -139,7 +139,7 @@ namespace TaskSchedulerClient.Controllers
 
             await client.PostAsJsonAsync(
                 _configuration["ConnectionAPI:Path"] + "/api/User/CreateUser", 
-                _cryptography.RSA_Encrypt_IUser(registerModel, _configuration["APIkey"]));
+                _cryptography.RSAEncryptIUser(registerModel, _configuration["APIkey"]));
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace TaskSchedulerClient.Controllers
                 UserName = registerModel.UserName,
                 UserEmail = registerModel.UserEmail,
                 UserPassword = registerModel.UserPassword,
-                UserImage = new byte[0]
+                //UserImage = new byte[0]
             };
             return entityObject;
         }

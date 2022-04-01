@@ -57,7 +57,7 @@ namespace TaskSchedulerClient.CryptographyMethods
         /// <param name="user">Об'єкт, що наслідує інтерфейс IUser, 
         /// пароль якого шифрується</param>
         /// <param name="key"></param>
-        public object RSA_Encrypt_IUser(IUser user, string key)
+        public object RSAEncryptIUser(IUser user, string key)
         {
             user.UserPassword = RSA_Encrypt(user.UserPassword, _configuration["APIkey"]);
             return user;

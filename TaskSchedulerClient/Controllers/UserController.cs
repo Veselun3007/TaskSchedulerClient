@@ -80,92 +80,52 @@ namespace TaskSchedulerClient.Controllers
             return View(assignments);
         }
 
-        #region *** Create ***
+        #region *** Create & Update ***
 
-        public IActionResult Create()
+        public IActionResult Edit(AssignmentEditModel assignmentEdit, int id)
         {
-            return View();
+            if (id != 0)
+            {
+                 assignmentEdit = AssignmentEditModels.First(e => e.AssignmentId == id);
+
+                return View(assignmentEdit);
+            }
+            else 
+                return View(assignmentEdit);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(AssignmentEditModel assignment)
+       [HttpPost]
+        public async Task<IActionResult> Edit(AssignmentEditModel assignment)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await AddData(assignment);
+                    await SaveData(assignment);
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", ex.Message);
                 }
-            }
-            else
-            {
-                return View(assignment);
-            }
-            return RedirectToAction("Index");
-        }
-
-        private static object CreateAssignmentUserObj(AssignmentEditModel assignment)
-        {
-            AssignmentEditModel entityObject = new()
-            {
-                AssignmentName = assignment.AssignmentName,
-                AssignmentDescription = assignment.AssignmentDescription,
-                AssignmentTime = assignment.AssignmentTime,
-                AssignmentState = null,
-                UserId = 0
-            };
-            return entityObject;
-        }
-
-        private async Task AddData(AssignmentEditModel assignment)
-        {
-            HttpClient client = ConnectToApi();
-
-            CreateAssignmentUserObj(assignment);
-            await PostAsync(assignment, client);
-        }
-
-        private async Task PostAsync(AssignmentEditModel assignment, HttpClient client)
-        {
-            await client.PostAsJsonAsync(_configuration["ConnectionAPI:Path"] + 
-                "/api/Assignment/CreateAssignment", assignment);
-        }
-
-        #endregion
-
-        #region *** Update ***
-
-        public IActionResult Update(int id)
-        {
-            AssignmentEditModel assignmentEdit =
-                AssignmentEditModels.First(e => e.AssignmentId == id);
-
-            return View(assignmentEdit);
-        }
-
-       [HttpPost]
-        public async Task<IActionResult> Update(AssignmentEditModel assignment)
-        {
-
+            }        
             if (!ModelState.IsValid)
             {
                 return View(assignment);
             }
-            try
-            {
-                await UpdateData(assignment);
-            }
-            catch (Exception)
-            {
-                return View(assignment);
-            }
             return RedirectToAction("Index");
         }
 
+        private async Task SaveData(AssignmentEditModel assignment)
+        {
+            if (assignment.AssignmentId == 0)
+            {
+                await AddData(assignment);
+            }
+            else
+                await UpdateData(assignment);               
+        }
+
+        #region *** Update ***
         private async Task UpdateData(AssignmentEditModel assignment)
         {
             HttpClient client = ConnectToApi();
@@ -175,7 +135,6 @@ namespace TaskSchedulerClient.Controllers
 
             UpdateAssignmentUserObj(entityObj, assignment);
             await PutAsync(assignment, client);
-
         }
 
         private async Task PutAsync(AssignmentEditModel assignment, HttpClient client)
@@ -194,6 +153,38 @@ namespace TaskSchedulerClient.Controllers
             entityObj.UserId = assignment.UserId;
 
         }
+        #endregion
+
+        #region *** Create ***
+
+        private static object CreateAssignmentUserObj(AssignmentEditModel assignment)
+        {
+            AssignmentEditModel entityObject = new()
+            {
+                AssignmentName = assignment.AssignmentName,
+                AssignmentDescription = assignment.AssignmentDescription,
+                AssignmentTime = assignment.AssignmentTime,
+                AssignmentState = assignment.AssignmentState,
+                UserId = assignment.UserId
+            };
+            return entityObject;
+        }
+
+        private async Task AddData(AssignmentEditModel assignment)
+        {
+            HttpClient client = ConnectToApi();
+
+            CreateAssignmentUserObj(assignment);
+            await PostAsync(assignment, client);
+        }
+
+        private async Task PostAsync(AssignmentEditModel assignment, HttpClient client)
+        {
+            await client.PostAsJsonAsync(_configuration["ConnectionAPI:Path"] +
+                "/api/Assignment/CreateAssignment", assignment);
+        }
+
+        #endregion
 
         #endregion
 

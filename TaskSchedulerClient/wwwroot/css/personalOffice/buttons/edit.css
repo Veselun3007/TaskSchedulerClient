@@ -1,0 +1,63 @@
+﻿@import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.a-edit {
+    display: flex;
+    width: 160px;
+    height: 50px;
+    padding: 0;
+    background: #009578;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+    overflow: hidden;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+    .a-edit:hover {
+        background: #008168;
+    }
+
+        .a-edit:hover .a-edit__icon {
+            background: transparent;
+            transform: rotate(360deg);
+            transition: 0.5s linear;
+        }
+
+    .a-edit:active {
+        background: #006e58;
+    }
+
+.a-edit__text{
+    display: inline-flex;
+    align-items: center;
+    padding: 0 42px;
+    color: #fff;
+    height: 100%;
+    width: 70%;
+
+}
+
+.a-edit__icon {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    color: #fff;
+    height: 100%;
+    width: 30%;
+    transition: 0.5s;
+    background: transparent;
+}
+
+.a-edit__icon {
+    font-size: 1.5em;
+    background: transparent;
+}

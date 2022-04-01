@@ -10,10 +10,13 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <link rel="stylesheet" type="text/css" href="~/css/personalOffice/buttons/delete.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/buttons/edit.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/buttons/create.css" />
 </head>
 <body>
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Edit" class="a-create"> <text class="a-create__text">Create</text>
+        <span class="a-create__icon"><ion-icon name="add-circle-outline"></ion-icon></span></a>
 </p>
 <table class="table">
     <thead>
@@ -61,16 +64,21 @@
                 @Html.DisplayFor(modelItem => item.UserId)
             </td>
             <td>
-                <a asp-controller="User" asp-action="Update" asp-route-id="@item.AssignmentId"> Edit</a>
-                <a class="btn a-delete" asp-controller="User" asp-action="Delete" asp-route-id="@item.AssignmentId"> <span></span><text>Delete</text></a>
+                <a class="a-edit" asp-controller="User" asp-action="Edit" asp-route-id="@item.AssignmentId">
+                    <text class="a-edit__text">Edit</text><span class="a-edit__icon"><ion-icon name="refresh-outline"></ion-icon></span></a>
+
+
+                <a class="btn a-delete" asp-controller="User" asp-action="Delete" asp-route-id="@item.AssignmentId"> 
+                    <span></span><text>Delete</text></a>
 
             </td>
         </tr>
 }
     </tbody>
 </table>
-
+<!--Scripts-->
 <script src="~/js/personalOffice/buttons/delete.js"></script>
+<script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
 
 </body>
 </html>

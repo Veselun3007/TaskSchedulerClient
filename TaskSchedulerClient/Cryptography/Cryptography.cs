@@ -26,7 +26,7 @@ namespace TaskSchedulerClient.CryptographyMethods
         {
             using RSACryptoServiceProvider rsa = new(512);
             _configuration["PublicKey"] = rsa.ToXmlString(false);
-            _configuration["Private_public_Keys"] = rsa.ToXmlString(true);
+            _configuration["Private_public_Key"] = rsa.ToXmlString(true);
 
         }
         #endregion
@@ -91,7 +91,7 @@ namespace TaskSchedulerClient.CryptographyMethods
         public void RSA_Decrypt_IUser(IUser user)
         {
             user.UserPassword = RSA_Decrypt(user.UserPassword,
-                _configuration["Private_public_Keys"]);
+                _configuration["Private_public_Key"]);
         }
         #endregion
 

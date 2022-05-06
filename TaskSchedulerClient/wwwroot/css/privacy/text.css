@@ -1,0 +1,19 @@
+﻿
+.ol {
+    list-style-type: decimal;
+    text-decoration: none;
+}
+
+.li {
+    list-style-type: none;
+}
+
+.ul {
+    list-style-type: none;
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+}
+
+.ul {
+    display: block;
+}

@@ -1,0 +1,99 @@
+﻿@model IndexModel
+
+@{
+    Layout = null;
+    int all = Model.Assignments.Count();
+    int failed = Model.Assignments.Count(e => e?.AssignmentState == false);
+    int done = Model.Assignments.Count(e => e?.AssignmentState == true);
+    int isPerformed = Model.Assignments.Count(e => e?.AssignmentState == null);
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <!-- Style -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/owl.carousel.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/profilePage/style.css">
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/buttons/delete.css" />
+</head>
+<body>
+    <div class="container rounded bg-white mt-5 mb-5">
+        <div class="row">
+            <div class="col-md-3 border-right">
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                    <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+                    <span class="font-weight-bold">@(Model.Users.UserName)</span>
+                    <span class="text-black-50">@(Model.Users.UserEmail)</span><span> </span>
+                </div>
+            </div>
+            <div class="col-md-5 border-right">
+                <div class="p-3 py-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-right">Profile Settings</h4>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <label class="labels">UserName</label>
+                            <input asp-for="@Model.Users.UserName" id="UserName" type="text" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">UserEmail</label>
+                            <input asp-for="@Model.Users.UserEmail" id="UserEmail" type="text" />
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <label class="labels">UserPassword</label>
+                            <input asp-for="@Model.Users.UserPassword" id="UserPassword" type="text" />
+                        </div>
+                        @* <div class="col-md-6">
+                            <label class="labels">ConfirmPassword</label>
+                            <input type="text" class="form-control" value="" placeholder="ConfirmPassword">
+                            </div>*@
+                    </div>
+
+                    <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button">Save Profile</button></div>
+                </div>
+            </div>
+            <div class="col-md-5 border-right">
+
+                <canvas id="myChart" width="150" height="150"></canvas>
+                <script>
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    const myChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                    labels: ['Виконано', 'Не виконано', 'Виконується'],
+                    datasets: [{
+                    label: '# of Votes',
+                    data: [@done, @failed, @isPerformed],
+                    backgroundColor: [
+                    'rgba(46, 125, 50, 0.3)',
+                    'rgba(213, 0, 0, 0.3)',
+                    'rgba(66, 165, 245, 0.3)',
+                    ],
+                    borderColor: [
+                    'rgba(46, 125, 50, 1)',
+                    'rgba(213, 0, 0, 1)',
+                    'rgba(66, 165, 245, 1)',
+                    ],
+                    borderWidth: 1
+                    }]
+                    },
+                    });
+                </script>
+
+            </div>
+            <div class="d-flex justify-content-between align-items-center experience">
+                <span>Видалити акаунт</span><br>
+                <span class="border px-3 p-1 add-experience">
+                    <a asp-controller="User" asp-action="DeleteUser">Delete Account</a></span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

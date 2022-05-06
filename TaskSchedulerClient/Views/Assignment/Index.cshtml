@@ -1,0 +1,261 @@
+﻿@using TaskSchedulerClient.Models
+@model IndexModel
+
+@{
+    Layout = null;
+}
+
+@{
+    int all = Model.Assignments.Count();
+    int failed = Model.Assignments.Count(e => e?.AssignmentState == false);
+    int done = Model.Assignments.Count(e => e?.AssignmentState == true);
+    int isPerformed = Model.Assignments.Count(e => e?.AssignmentState == null);
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <!-- Required meta tags -->
+    <script src="https://kit.fontawesome.com/e962381af3.js" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/e962381af3.js" crossorigin="anonymous"></script>
+    <!-- Style -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/owl.carousel.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/style.css">
+    <link rel="stylesheet" type="text/css" href="~/fonts/fontawesome-free-5.15.4-web/css/font-awesome.css">
+    <!--Button's style-->
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/buttons/delete.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/buttons/edit.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/personalOffice/buttons/create.css" />
+
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="toggle">
+            <a href="#" class="burger js-menu-toggle" data-toggle="collapse" data-target="#main-navbar">
+                <span></span>
+            </a>
+        </div>
+        <div class="side-inner">
+
+            <div class="profile">
+                <h3 class="name">@(Model.Users.UserName)</h3>
+            </div>
+
+            <div>
+                <canvas id="myChart" width="150" height="150"></canvas>
+                <script>
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    const myChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                    labels: ['Виконано', 'Не виконано', 'Виконується'],
+                    datasets: [{
+                    label: '# of Votes',
+                    data: [@done, @failed, @isPerformed],
+                    backgroundColor: [
+                    'rgba(46, 125, 50, 0.3)',
+                    'rgba(213, 0, 0, 0.3)',
+                    'rgba(66, 165, 245, 0.3)',
+                    ],
+                    borderColor: [
+                    'rgba(46, 125, 50, 1)',
+                    'rgba(213, 0, 0, 1)',
+                    'rgba(66, 165, 245, 1)',
+                    ],
+                    borderWidth: 1
+                    }]
+                    },
+
+                    });
+                </script>
+
+            </div>
+            <div class="nav-menu">
+                <ul>
+                    <li><a href="#"><i class="fa-light fa-arrow-right-from-bracket"></i>LogOut</a></li>
+                    <li><a href="~/User/PersonaAccount">Особистий кабінет</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+    <main>
+        <div class="site-section">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="row">
+
+                        <a asp-action="Edit" class="a-create">
+                            <text class="a-create__text">Create</text>
+                            <span class="a-create__icon"><ion-icon name="add-outline"></ion-icon></span>
+                        </a>
+                        <div class="dropdown custom-dropdown">
+                            <a href="#" data-toggle="dropdown" class="dropdown-link" aria-haspopup="true" aria-expanded="false" title="Sorting">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16">
+                                    <path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293V2.5zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z" />
+                                </svg>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" asp-action="Index" asp-route-sortOrder="@(Model.SortViewModel.NameSortAsc)"
+                                   asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                                   asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                                   asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                                    <strong>За назвою &#8593;</strong> <span>Назва від А-Я</span>
+                                </a>
+                                <a class="dropdown-item" asp-action="Index" asp-route-sortOrder="@(Model.SortViewModel.NameSortDesc)"
+                                   asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                                   asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                                   asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                                    <strong>За назвою &#8595;</strong> <span>Назва від Я-А</span>
+                                </a>
+                                <a class="dropdown-item" asp-action="Index" asp-route-sortOrder="@(Model.SortViewModel.DateSortAsc)"
+                                   asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                                   asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                                   asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                                    <strong>За датою &#8593;</strong> <span>Дата від новішої</span>
+                                </a>
+                                <a class="dropdown-item" asp-action="Index" asp-route-sortOrder="@(Model.SortViewModel.DateSortDesc)"
+                                   asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                                   asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                                   asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                                    <strong>За датою &#8595;</strong> <span>Дата від давнішої</span>
+                                </a>
+                                <a class="dropdown-item" asp-action="Index" asp-route-sortOrder="@(Model.SortViewModel.StateSortAsc)"
+                                   asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                                   asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                                   asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                                    <strong>За станом виконання &#8593;</strong> <span>Статус від Виконується до Виконано</span>
+                                </a>
+                                <a class="dropdown-item" asp-action="Index" asp-route-sortOrder="@(Model.SortViewModel.StateSortDesc)"
+                                   asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                                   asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                                   asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                                    <strong>За станом виконання &#8595;</strong> <span>Статус від Виконано до Виконується</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="dropdown custom-dropdown">
+                            <a href="#" data-toggle="dropdown" class="dropdown-link" aria-haspopup="true" aria-expanded="false" title="Filtration">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+                                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z" />
+                                </svg>
+                            </a>
+                            <div class="dropdown-menu d-flex" aria-labelledby="dropdownMenuButton">
+                                <div class="half-col">
+                                    <form class="form-inline" asp-controller="User" asp-action="Index" method="get">
+                                        Name:  <input value="@Model.FilterViewModel.SelectedName" class="form-control" name="searchName" type="text" />
+                                        Start: <input value="@Model.FilterViewModel.StartDate" class="form-control" name="startDate" type="datetime-local" />
+                                        End:   <input value="@Model.FilterViewModel.EndDate" class="form-control" name="endDate" type="datetime-local" />
+                                        <input class="btn btn-primary mb-2" type="submit" value="Filter" />
+                                    </form>
+
+                                </div>
+                            </div>
+                            <div>
+
+                                <a class="btnDelete" id="btnDelete" href='javascript:;'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="row align-items-start">
+                            @foreach (var item in Model.Assignments)
+                            {
+                                <div class="card card-product-grid card-lg">
+                                    <div class="info-wrap">
+                                        <div class="row">
+                                            <div class="col-md-9 col-xs-9"><h4>@item.AssignmentName</h4></div>
+                                            <input class="chkDelete" name="chkDeleteName" type="checkbox" value="@item.AssignmentId" />
+                                        </div>
+                                    </div>
+                                    <div class="bottom-wrap-payment">
+                                        <div class="info-wrap">
+                                            <div class="row">
+                                                <div class="chip ms-0 me-0 float-right">@item.AssignmentTime.ToString()</div>
+                                            </div>
+                                        </div>
+                                        <div class="info-wrap">
+                                            <div class="row">
+                                                <div class="col-md-9 col-xs-9"> <text class="title" data-abc="true">@item.AssignmentDescription</text></div>
+                                            </div>
+                                        </div>
+                                        <div class="info-wrap">
+                                            <div class="row">
+                                                <form class="form-inline" asp-action="UpdateState" method="get">
+                                                    <select id="AssignmentState" asp-for="@item.AssignmentState" name="AssignmentState" class="form-control mb-2" aria-label=".form-select-lg example">
+                                                        <option value="null" selected="@(item.AssignmentState == null)">Виконується</option>
+                                                        <option value="true" selected="@(item.AssignmentState == true)">Виконано</option>
+                                                        <option value="false" selected="@(item.AssignmentState == false)">Не виконано</option>
+                                                    </select>
+                                                    <button class="btn btn-primary mb-2" type="submit" asp-route-id="@item.AssignmentId" asp-action="UpdateState" asp-controller="Assignment">Відмітити</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bottom-wrap">
+                                        <a class="a-edit float-left" asp-controller="Assignment" asp-action="Edit" asp-route-id="@item.AssignmentId">
+                                            <text class="a-edit__text">Edit</text><span class="a-edit__icon">
+                                                <ion-icon name="refresh-outline"></ion-icon>
+                                            </span>
+                                        </a>
+                                        <div class="price-wrap">
+                                            <a class="a-delete float-right" asp-controller="Assignment" asp-action="Delete" asp-route-id="@item.AssignmentId">
+                                                <span></span><text>Delete</text>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        $(".btnDelete").on("click", function (e) {
+            var confirmation = confirm("Ви впевнені?")
+            if (confirmation) {
+                e.preventDefault();
+                var data = [];
+                $("input[name='chkDeleteName']:checked").each(function () {
+                    data.push($(this).val());
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Assignment/DeleteSelected',
+                    data: { deleteList: data },
+                traditional:true,
+                success: function (result) {
+                    alert("Видалення успішне")
+                    location.reload();
+                }
+            })
+            }
+            else
+                alert("Delete Canceled")
+            })
+    </script>
+
+    <!--Scritps-->
+    <script type="text/javascript" src="js/personalOffice/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/personalOffice/popper.min.js"></script>
+    <script type="text/javascript" src="js/personalOffice/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/personalOffice/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="js/personalOffice/main.js"></script>
+    <script type="text/javascript" src="js/personalOffice/index.js"></script>
+    <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+</body>
+</html>

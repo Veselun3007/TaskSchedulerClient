@@ -15,7 +15,5 @@ namespace TaskSchedulerClient.Models
 
         public string UserPassword { get; set; }
 
-        public string UserImage { get; set; }
-
     }
 }

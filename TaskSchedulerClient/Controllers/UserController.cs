@@ -3,45 +3,36 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
-using TaskSchedulerAPI.Models;
+using TaskSchedulerClient.CryptographyMethods;
 using TaskSchedulerClient.Models;
 
 namespace TaskSchedulerClient.Controllers
 {
-    /// <summary>
-    /// Контролер, для реалізації CRUD-операцій 
-    /// над завданнями користувача
-    /// </summary>
     public class UserController : Controller
     {
-
         #region *** Fields + Сonstructor ***
 
         private readonly IConfiguration _configuration;
+        private readonly Cryptography _cryptography;
+        private readonly User user;
         private ICollection<Assignment> assignments;
-        private IEnumerable<AssignmentEditModel> AssignmentEditModels { get; set; }
 
         public ICollection<Assignment> Assignments
         {
             get { return assignments; }
-            set
-            {
-                assignments = value;
-                AssignmentEditModels = assignments
-                    .Select(e => (AssignmentEditModel)e).OrderBy(e => e.AssignmentName);
-            }
+            set { assignments = value; }
         }
 
-        public UserController(IConfiguration configuration)
+        public UserController(IConfiguration configuration,
+            Cryptography cryptography)
         {
             _configuration = configuration;
-
+            _cryptography = cryptography;
             HttpClient client = ConnectToApi();
-            Assignments = GetAll(client);
+            Assignments = GetAllAssignment(client);
+            user = GetUser(client);
         }
 
         #endregion
@@ -57,8 +48,27 @@ namespace TaskSchedulerClient.Controllers
         }
         #endregion
 
+        #region *** GetUser ***
+        private User GetUser(HttpClient client)
+        {
+
+            client.DefaultRequestHeaders.Add("userPublicKey",
+                _configuration["PublicKey"]);
+
+            var response = client.GetAsync(_configuration["ConnectionAPI:Path"] +
+                "/api/User/GetUser").Result;
+
+            var result = response.Content.ReadAsStringAsync().Result;
+
+            User user = JsonConvert.
+                DeserializeObject<User>(result);
+            return user;
+
+        }
+        #endregion
+
         #region *** Get All Assignment ***
-        private List<Assignment> GetAll(HttpClient client)
+        private List<Assignment> GetAllAssignment(HttpClient client)
         {
             var response = client.GetAsync(_configuration["ConnectionAPI:Path"] +
                 "/api/Assignment/GetAllAssignments").Result;
@@ -72,142 +82,76 @@ namespace TaskSchedulerClient.Controllers
         }
         #endregion
 
-        #region *** Action CRUD ***
-
-        [HttpGet]
-        public IActionResult Index()
+        public IActionResult PersonaAccount()
         {
-            return View(assignments);
+            _cryptography.RSA_Decrypt_IUser(user);
+
+            IndexModel viewModel = new()
+            {
+                Assignments = assignments,
+                Users = user,
+            };
+            return View(viewModel);
         }
 
-        #region *** Create & Update ***
+        #region *** Action CRUD User ***
 
-        public IActionResult Edit(AssignmentEditModel assignmentEdit, int id)
+
+        #region *** Update ***
+
+        public async Task<IActionResult> UpdateUserObj(UserEditModel model)
         {
-            if (id != 0)
+            try
             {
-                 assignmentEdit = AssignmentEditModels.First(e => e.AssignmentId == id);
+                HttpClient client = ConnectToApi();
 
-                return View(assignmentEdit);
+                var user = GetUser(client);
+
+                UpdateUserObject(user, model);
+                await PutAsync(model, client);
             }
-            else 
-                return View(assignmentEdit);
-        }
-
-       [HttpPost]
-        public async Task<IActionResult> Edit(AssignmentEditModel assignment)
-        {
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                try
-                {
-                    await SaveData(assignment);
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", ex.Message);
-                }
-            }        
-            if (!ModelState.IsValid)
-            {
-                return View(assignment);
+                ModelState.AddModelError("", ex.Message);
+                return View(model);
             }
             return RedirectToAction("Index");
         }
 
-        private async Task SaveData(AssignmentEditModel assignment)
+        private static void UpdateUserObject(User user,
+            UserEditModel model)
         {
-            if (assignment.AssignmentId == 0)
-            {
-                await AddData(assignment);
-            }
-            else
-                await UpdateData(assignment);               
+            user.UserName = model.UserName;
+            user.UserEmail = model.UserEmail;
+            user.UserPassword = model.UserPassword;
         }
 
-        #region *** Update ***
-        private async Task UpdateData(AssignmentEditModel assignment)
+        private async Task PutAsync(UserEditModel user, HttpClient client)
         {
-            HttpClient client = ConnectToApi();
-
-            var entityObj = Assignments.
-                First(e => e.AssignmentId == assignment.AssignmentId);
-
-            UpdateAssignmentUserObj(entityObj, assignment);
-            await PutAsync(assignment, client);
+            await client.PutAsJsonAsync(_configuration["ConnectionAPI:Path"] +
+                "/api/User/UpdateUser", user);
         }
-
-        private async Task PutAsync(AssignmentEditModel assignment, HttpClient client)
-        {
-            await client.PutAsJsonAsync(_configuration["ConnectionAPI:Path"] + 
-                "/api/Assignment/UpdateAssignment", assignment);
-        }
-
-        private static void UpdateAssignmentUserObj(Assignment entityObj,
-            AssignmentEditModel assignment)
-        {
-            entityObj.AssignmentName = assignment.AssignmentName;
-            entityObj.AssignmentDescription = assignment.AssignmentDescription;
-            entityObj.AssignmentTime = assignment.AssignmentTime;
-            entityObj.AssignmentState = assignment.AssignmentState;
-            entityObj.UserId = assignment.UserId;
-
-        }
-        #endregion
-
-        #region *** Create ***
-
-        private static object CreateAssignmentUserObj(AssignmentEditModel assignment)
-        {
-            AssignmentEditModel entityObject = new()
-            {
-                AssignmentName = assignment.AssignmentName,
-                AssignmentDescription = assignment.AssignmentDescription,
-                AssignmentTime = assignment.AssignmentTime,
-                AssignmentState = assignment.AssignmentState,
-                UserId = assignment.UserId
-            };
-            return entityObject;
-        }
-
-        private async Task AddData(AssignmentEditModel assignment)
-        {
-            HttpClient client = ConnectToApi();
-
-            CreateAssignmentUserObj(assignment);
-            await PostAsync(assignment, client);
-        }
-
-        private async Task PostAsync(AssignmentEditModel assignment, HttpClient client)
-        {
-            await client.PostAsJsonAsync(_configuration["ConnectionAPI:Path"] +
-                "/api/Assignment/CreateAssignment", assignment);
-        }
-
-        #endregion
-
         #endregion
 
         #region *** Delete ***
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteUser()
         {
             HttpClient client = ConnectToApi();
-            await DeleteAsync(id, client);
+            await DeleteUserAsync(client);
 
-            return RedirectToAction("Index");
+            return Redirect("~/Home/Index");
         }
 
-        private async Task DeleteAsync(int id, HttpClient client)
+        private async Task DeleteUserAsync(HttpClient client)
         {
-            await client.DeleteAsync(_configuration["ConnectionAPI:Path"] + 
-                $"/api/Assignment/DeleteAssignment/{id}");
+            await client.DeleteAsync(_configuration["ConnectionAPI:Path"] +
+                $"/api/User/DeleteUser");
         }
 
         #endregion
 
         #endregion
-
     }
 }

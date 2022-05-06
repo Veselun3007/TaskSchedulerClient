@@ -7,39 +7,43 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
+<head>
     <meta charset="UTF-8">
     <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.css'>
     <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css'>
     <link rel="stylesheet" type="text/css" href="~/css/forms/forms.css" />
-  </head>
+</head>
 
 <body>
-  <div class="signupSection">
-  <div class="info">
-    <h2>Welcome to GigaBruh</h2>
-    <i class="icon ion-ios-ionic-outline" aria-hidden="true"></i>
-    <p>Don`t have an acount?<br /><a href="~/Auth/Register" class="a">To create</a></p>
-  </div>
-  <form asp-action="Login" class="signupForm">
-    <h2>Log In</h2>
-    <ul class="noBullet">
-      <li>
-        <label for="username"></label>
-        <input type="text" class="inputFields" id="username" name="UserName" placeholder="UserName" value="" required/>
-         <span asp-validation-for="UserName" class="text-danger"></span>
-      </li>
-      <li>
-        <label for="password"></label>
-        <input type="password" class="inputFields" id="password" name="UserPassword" placeholder="UserPassword" value="" required/>
-         <span asp-validation-for="UserPassword" class="text-danger"></span>
-      </li>
-      <li id="center-btn">
-        <button type="submit" id="join-btn" name="join">Log in</button>
-      </li>
-    </ul>
-  </form>
-</div>
+    <div class="signupSection">
+        <div class="info">
+            <h2>Welcome to GigaBruh</h2>
+            <i class="icon ion-ios-ionic-outline" aria-hidden="true"></i>
+            <p>Don`t have an acount?<br /><a href="~/Auth/Register" class="a">To create</a></p>
+        </div>
+        <form asp-action="Login" class="signupForm">
+            <h2>Log In</h2>
+            <ul class="noBullet">
+                <li>
+                    <label for="username"></label>
+                    <input type="text" class="inputFields" id="username" name="UserName" placeholder="UserName" value=""  />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </li>
+                <li>
+                    <label for="password"></label>
+                    <input type="password" class="inputFields" id="password" name="UserPassword" placeholder="UserPassword" value=""  />
+                    <span asp-validation-for="UserPassword" class="text-danger"></span>
+                </li>
+                <li id="center-btn">
+                    <button type="submit" id="join-btn" name="join">Log in</button>
+                </li>
+            </ul>
+        </form>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
 </body>
 </html>

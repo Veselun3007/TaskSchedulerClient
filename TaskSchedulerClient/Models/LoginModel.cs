@@ -1,13 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using TaskSchedulerClient.Models.Interfaces;
+using TaskShedulerDesktopClient.Data.Errors;
 
 namespace TaskSchedulerClient.Models
 {
+
     /// <summary>
     /// Клас, що описує модель аутентифікація
     /// </summary>
+    
     public class LoginModel : IUser
     {
+        public ErrorInfo ErrorInfo { get; set; } = new ErrorInfo();
         public LoginModel() {}
 
         [Display(Name = "Логін")]

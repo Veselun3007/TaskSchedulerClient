@@ -3,17 +3,19 @@ using TaskSchedulerClient.Models.Interfaces;
 
 namespace TaskSchedulerClient.Models
 {
+
     /// <summary>
     /// Клас, що описує модель реєстрації
     /// </summary>
+    
     public class RegisterModel : IUser
     {
         public RegisterModel() {}
 
         [Display(Name = "Логін")]
         [Required(ErrorMessage = "Не вказаний логін")]
-        [StringLength(53, MinimumLength = 5,
-            ErrorMessage = "Введіть логін довжиною від 5 до 53 символів")]
+        [StringLength(50, MinimumLength = 3,
+            ErrorMessage = "Введіть логін довжиною від 3 до 50 символів")]
         public string UserName { get; set; }
 
         [Display(Name = "Електрона пошта")]
@@ -23,6 +25,9 @@ namespace TaskSchedulerClient.Models
 
         [Display(Name = "Пароль")]
         [Required(ErrorMessage = "Не вказаний пароль")]
+        [RegularExpression(@"^(?=.{10,}$)(?=(?:.*?[A-Z]){2})(?=.*?[a-z])(?=(?:.*?[0-9]){2}).*$",
+            ErrorMessage = "Пароль має містити 10 символів та як мінімум 2 великі та 1 " +
+            "рядкову літеру латинського алфавіту, 2 цифри")]
         [DataType(DataType.Password)]
         public string UserPassword { get; set; }
 

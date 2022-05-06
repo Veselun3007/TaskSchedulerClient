@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using TaskSchedulerClient.Models;
 using TaskSchedulerClient.CryptographyMethods;
 using Microsoft.AspNetCore.Mvc;
+using TaskSchedulerClient.ErrorHandling;
+using TaskShedulerDesktopClient.Data.Errors;
 
 namespace TaskSchedulerClient.Controllers
 {
@@ -22,6 +24,7 @@ namespace TaskSchedulerClient.Controllers
 
         private readonly IConfiguration _configuration;
         private readonly Cryptography _cryptography;
+        public ErrorInfo ErrorInfo { get; set; } = new ErrorInfo();
 
         public AuthController(IConfiguration configuration, 
             Cryptography cryptography)
@@ -60,34 +63,30 @@ namespace TaskSchedulerClient.Controllers
                 return View(loginModel);
             }
             try
-            {
+            {              
                 using var client = new HttpClient();
+                _cryptography.RSA_KeyGenerate();
                 HttpResponseMessage response = await LogIn(loginModel, client);
-
+                if (!response.IsSuccessStatusCode) throw new ServerException(response);
                 Dictionary<string, string> dictionaryResult = ExtractToken(response);
                 _configuration["JWTtoken"] = dictionaryResult["token"];
 
-                return RedirectToAction("Index", "User");
+                return RedirectToAction("Index", "Assignment");
             }
-            catch (Exception ex)
+            catch (ServerException ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                ErrorInfo.SetServerErrors(ErrorInfo, ex.ResponseMessage);
+                ModelState.AddModelError("", ErrorInfo.ServerError);
                 return View(loginModel);
             }
         }
 
         private async Task<HttpResponseMessage> LogIn(LoginModel loginModel, HttpClient client)
         {
-
             return await client.PostAsJsonAsync( 
                 _configuration["ConnectionAPI:Path"] + "/api/Auth/Auth",
                 _cryptography.RSAEncryptIUser(loginModel, _configuration["APIkey"]));
-        }
 
-        private static Dictionary<string, string> ExtractToken(HttpResponseMessage response)
-        {
-            return JsonConvert.DeserializeObject
-                <Dictionary<string, string>>(response.Content.ReadAsStringAsync().Result);
         }
 
         private static object CreteLoginUserObj(LoginModel loginModel)
@@ -121,11 +120,12 @@ namespace TaskSchedulerClient.Controllers
             try
             {
                 using var client = new HttpClient();
+                _cryptography.RSA_KeyGenerate();
                 await UserRegister(registerModel, client);
 
                 await GetToken(registerModel, client);
 
-                return RedirectToAction("Index", "User");
+                return RedirectToAction("Index", "Assignment");
             }
             catch (Exception ex)
             {
@@ -136,7 +136,6 @@ namespace TaskSchedulerClient.Controllers
 
         private async Task UserRegister(RegisterModel registerModel, HttpClient client)
         {
-
             await client.PostAsJsonAsync(
                 _configuration["ConnectionAPI:Path"] + "/api/User/CreateUser", 
                 _cryptography.RSAEncryptIUser(registerModel, _configuration["APIkey"]));
@@ -180,12 +179,22 @@ namespace TaskSchedulerClient.Controllers
                 UserName = registerModel.UserName,
                 UserEmail = registerModel.UserEmail,
                 UserPassword = registerModel.UserPassword,
-                //UserImage = new byte[0]
             };
             return entityObject;
         }
 
         #endregion
+
+        /// <summary>
+        /// Метод, що витягує токен з HTTP відповіді
+        /// </summary>
+        /// <param name="response">HttpResponseMessage</param>
+        /// <returns>Словник значень отримані з HTTP відповіді</returns>
+        private static Dictionary<string, string> ExtractToken(HttpResponseMessage response)
+        {
+            return JsonConvert.DeserializeObject
+                <Dictionary<string, string>>(response.Content.ReadAsStringAsync().Result);
+        }
 
     }
 }

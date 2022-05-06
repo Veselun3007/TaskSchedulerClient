@@ -1,4 +1,5 @@
 ﻿@import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap');
+@import url("https://kit.fontawesome.com/e962381af3.js");
 
 * {
     margin: 0;
@@ -26,11 +27,11 @@
         background: #3D5AFE;
     }
 
-        .a-create:hover .a-create__icon {
-            background: transparent;
-            transform: rotate(180deg);
-            transition: 0.5s linear;
-        }
+.a-create:hover .a-create__icon {
+    background: transparent;
+    transform: rotate(180deg) scale(1.5);
+    transition: 0.5s linear;
+}
 
     .a-edit:active {
         background: #651FFF;

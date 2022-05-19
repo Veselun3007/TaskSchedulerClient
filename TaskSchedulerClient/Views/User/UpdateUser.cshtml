@@ -1,0 +1,64 @@
+﻿@model TaskSchedulerClient.Models.User
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+   
+    <link rel="stylesheet" href="~/css/profilePage/assets/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/forms/edit.css" />
+</head>
+<body>
+    <div class="content">
+        <div class="container">
+            <div class="row align-items-stretch no-gutters contact-wrap">
+                <div class="col-md-12">
+                    <div class="form h-100">
+                        <form class="mb-5" asp-action="UpdateUser">
+                            <div class="row">
+                                <input asp-for="UserId" type="hidden" class="form-control" />
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="UserName" class="col-form-label">Ім'я користувача</label>
+                                    <input asp-for="UserName" class="form-control" id="AssignmentName" type="text" required />
+                                </div>
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="UserEmail" class="col-form-label">Адреса електроної пошти</label>
+                                    <input asp-for="UserEmail" type="email" id="AssignmentTime" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 form-group mb-3">
+                                    <label for="UserPassword" class="col-form-label">Пароль</label>
+                                    <textarea asp-for="UserPassword" id="AssignmentDescription" class="form-control" placeholder="Write your description"></textarea>
+                                </div>
+                            </div>
+                            <input asp-for="UserId" type="hidden" />
+                            <div class="row p-4 text-center">
+                                <div role="toolbar" class="text-center p-3">
+                                <div class="btn-group" role="group">
+                                    <button type="submit"class="btn btn-gradient-success btn-icon-text">Зберегти завдання</button>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <a class="btn btn-gradient-info" href="~/User/PersonalAccount">Назад</a>
+                                </div>
+                            </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/personalOffice/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/personalOffice/popper.min.js"></script>
+    <script type="text/javascript" src="js/personalOffice/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/personalOffice/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="js/personalOffice/main.js"></script>
+</body>
+</html>

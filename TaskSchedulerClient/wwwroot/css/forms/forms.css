@@ -96,6 +96,17 @@ body {
     }
 
 .a {
-    text-decoration: underline dotted red;
-    color: azure;
+    text-decoration: none;
+    color: #00B0FF;
+}
+
+.justify-content-center {
+    -webkit-box-pack: center !important;
+    -ms-flex-pack: center !important;
+    justify-content: center !important;
+}
+
+.align-self-center {
+    -ms-flex-item-align: center !important;
+    align-self: center !important;
 }

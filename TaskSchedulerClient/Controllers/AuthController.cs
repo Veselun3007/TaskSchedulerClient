@@ -86,7 +86,6 @@ namespace TaskSchedulerClient.Controllers
             return await client.PostAsJsonAsync( 
                 _configuration["ConnectionAPI:Path"] + "/api/Auth/Auth",
                 _cryptography.RSAEncryptIUser(loginModel, _configuration["APIkey"]));
-
         }
 
         private static object CreteLoginUserObj(LoginModel loginModel)
@@ -156,13 +155,11 @@ namespace TaskSchedulerClient.Controllers
             Dictionary<string, string> dictionaryResult = ExtractToken(response);
             _configuration["JWTtoken"] = dictionaryResult["token"];
         }
-
         private async Task<HttpResponseMessage> SingUp(HttpClient client, LoginModel loginModel)
         {
             return await client.PostAsJsonAsync(
                   _configuration["ConnectionAPI:Path"] + "/api/Auth/Auth", loginModel);
         }
-
         private static LoginModel CreatAuthUser(RegisterModel registerModel)
         {
             return new LoginModel
@@ -171,7 +168,6 @@ namespace TaskSchedulerClient.Controllers
                 UserPassword = registerModel.UserPassword
             };
         }
-
         private static object CreteRegisterUserObj(RegisterModel registerModel)
         {
             RegisterModel entityObject = new()

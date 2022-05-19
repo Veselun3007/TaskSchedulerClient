@@ -79,7 +79,7 @@ a {
 .btn {
     border: none;
     border-radius: 0;
-    font-size: 11px;
+    font-size: 14px;
     letter-spacing: .2rem;
     text-transform: uppercase;
     border-radius: 30px !important;
@@ -110,8 +110,8 @@ a {
 }
 
     .contact-wrap .col-form-label {
-        font-size: 14px;
-        color: #b3b3b3;
+        font-size: 16px;
+        color: #212121;
         margin: 0 0 10px 0;
         display: inline-block;
         padding: 0;
@@ -206,3 +206,63 @@ label.error {
     font-size: 12px;
     color: #000;
 }
+
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1;
+    color: #343a40;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 0.875rem 2.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.1875rem;
+    -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn {
+        -webkit-transition: none;
+        transition: none;
+    }
+}
+
+.btn:hover {
+    color: #343a40;
+}
+
+.btn-check:focus + .btn, .btn:focus {
+    outline: 0;
+    -webkit-box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn:disabled, .btn.disabled,
+fieldset:disabled .btn {
+    pointer-events: none;
+    opacity: 0.65;
+}
+
+.btn-primary {
+    color: #000;
+    background-color: #00C853;
+    border-color: #00C853;
+}
+
+    .btn-primary:hover {
+        color: #000;
+        background-color: #69F0AE;
+        border-color: #69F0AE;
+    }
+

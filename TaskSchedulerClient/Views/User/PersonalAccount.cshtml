@@ -1,0 +1,276 @@
+﻿@using TaskSchedulerClient.Models
+@model IndexModel
+
+@{
+    Layout = null;
+    int all = Model.Assignments.Count();
+    int failed = Model.Assignments.Count(e => e?.AssignmentState == false);
+    int done = Model.Assignments.Count(e => e?.AssignmentState == true);
+    int isPerformed = Model.Assignments.Count(e => e?.AssignmentState == null);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="js/personalOffice/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="~/css/profilePage/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="~/css/profilePage/assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="~/css/profilePage/assets/css/style.css" />
+    <link rel="shortcut icon" href="~/css/profilePage/assets/images/favicon.ico" />
+</head>
+<body>
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="~/images/Logo.png" alt="logo" /></a>
+            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="~/images/Logo.png" alt="logo" /></a>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-stretch">
+
+            <ul class="navbar-nav navbar-nav-right">
+
+                <li class="nav-profile-text">
+                    <p class="mb-1 text-black">@(Model.Users.UserName)</p>
+                </li>
+
+                <li class="nav-item d-none d-lg-block full-screen-link">
+                    <a class="nav-link">
+                        <i class="mdi mdi-fullscreen" id="fullscreen-button"></i>
+                    </a>
+                </li>
+
+
+                <li class="nav-item nav-logout d-none d-lg-block">
+                    <a class="nav-link" href="~/User/LogOut">
+                        <i class="mdi mdi-logout me-2 text-primary"></i> Signout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid p-5">
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                        <i class="mdi mdi-home"></i>
+                    </span> Користувач та його статистика
+                </h3>
+                <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span><a class="text-decoration-none" href="~/Assignment/Index">Завдання</a></span> <i class="mdi mdi-keyboard-backspace icon-sm text-primary align-middle"></i>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row justify-content-center">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">UserName</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                @Model.Users.UserName
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row justify-content-center">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Email</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                @Model.Users.UserEmail
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row justify-content-center">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Password</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                @Model.Users.UserPassword
+                            </div>
+                        </div>
+
+
+                        <div class="row p-4 text-center">
+                            <div role="toolbar">
+                                <div class="btn-group" role="group">
+                                    <a asp-action="UpdateUser"  asp-route-id="@Model.Users.UserId" class="btn btn-gradient-success btn-icon-text">
+                                        <i class="mdi mdi-content-save-all"></i> Редагувати
+                                    </a>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <div class="price-wrap">
+                                        <a class="btn btn-gradient-danger btn-icon-text" asp-controller="User" asp-action="DeleteUser">
+                                            <i class="mdi mdi-delete-sweep btn-icon-prepend"></i> Видалити акаунт
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-4 stretch-card grid-margin">
+                <div class="card bg-gradient-danger card-img-holder text-white">
+                    <div class="card-body">
+                        <h4 class="font-weight-normal mb-3">
+                            Не виконано <i class="mdi mdi-close-box-outline mdi-24px float-right"></i>
+                        </h4>
+                        <h2 class="mb-5">@failed</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 stretch-card grid-margin">
+                <div class="card bg-gradient-info card-img-holder text-white">
+                    <div class="card-body">
+                        <h4 class="font-weight-normal mb-3">
+                            Виконується <i class="mdi mdi-calendar-clock mdi-24px float-right"></i>
+                        </h4>
+                        <h2 class="mb-5">@isPerformed</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 stretch-card grid-margin">
+                <div class="card bg-gradient-success card-img-holder text-white">
+                    <div class="card-body">
+                        <h4 class="font-weight-normal mb-3">
+                            Виконано <i class="mdi mdi-check-all mdi-24px float-right"></i>
+                        </h4>
+                        <h2 class="mb-5">@done</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center align-self-center">
+            <div class="col-md-4 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="clearfix">
+                            <h4 class="card-title">Статистика виконаних завдань</h4>
+                            <canvas id="myChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 grid-margin stretch-card  align-self-center">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="clearfix">
+                            <canvas id="myChart_bar"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    <script>
+           const labels = [
+          'Виконано',
+          'Виконується',
+          'Не виконано',
+        ];
+
+        const data = {
+          labels: labels,
+          datasets: [{
+            backgroundColor: [
+                          'rgba(46, 125, 50, 0.3)',
+                          'rgba(66, 165, 245, 0.3)',
+                          'rgba(213, 0, 0, 0.3)',
+
+                          ],
+                          borderColor: [
+                          'rgba(46, 125, 50, 1)',
+                          'rgba(66, 165, 245, 1)',
+                          'rgba(213, 0, 0, 1)',
+                          ],
+            data: [@done, @isPerformed, @failed],
+            responsive: true,
+
+          }]
+        };
+
+        const config = {
+          type: 'doughnut',
+          data: data,
+          options: {
+            plugins: {
+                legend: {
+                   display: false,
+                 }
+               }
+            }
+
+        };
+         const myChart = new Chart(
+          document.getElementById('myChart'),
+          config
+        );
+    </script>
+    <script>
+        const ctx = document.getElementById('myChart_bar').getContext('2d');
+        const myChart_bar = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Виконано',
+                  'Виконується',
+                  'Не виконано'],
+                datasets: [{
+                    label: "Виконання завдань",
+                    data: [@done, @isPerformed, @failed],
+                    backgroundColor: [
+                        'rgba(46, 125, 50, 0.3)',
+                        'rgba(66, 165, 245, 0.3)',
+                        'rgba(213, 0, 0, 0.3)'
+                    ],
+                    borderColor: [
+                        'rgba(46, 125, 50, 1)',
+                        'rgba(66, 165, 245, 1)',
+                        'rgba(213, 0, 0, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                legend: {
+                   display: false,
+                 }
+               }
+            }
+        });
+    </script>
+
+    <script src="~/css/profilePage/assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="~/css/profilePage/assets/js/jquery.cookie.js" type="text/javascript"></script>
+    <script src="~/css/profilePage/assets/js/off-canvas.js"></script>
+    <script src="~/css/profilePage/assets/js/hoverable-collapse.js"></script>
+    <script src="~/css/profilePage/assets/js/misc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <!-- endinject -->
+
+</body>
+</html>

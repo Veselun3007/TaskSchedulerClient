@@ -8,52 +8,50 @@
 
 <html>
 <head>
-    <meta charset="UTF-8">
-    <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.css'>
-    <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css'>
-    <link rel="stylesheet" type="text/css" href="~/css/forms/forms.css" />
+    <link rel="stylesheet" href="~/css/profilePage/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="~/css/profilePage/assets/css/style.css" />
+    <link rel="stylesheet" href="~/forms/forms.css" />
 </head>
 <body>
-    <div class="signupSection">
-        <div class="info">
-            <h2>Welcome to GigaBruh</h2>
-            <i class="icon ion-ios-ionic-outline" aria-hidden="true"></i>
-            <p>We are the future</p>
-        </div>
+    <div class="main">
+        <section class="signup">
+            <div class="container">
+                <div class="signup-content">
+                    <div class="signup-form">
+                        <figure><img src="~/images/signup-image.jpg" alt="sing up image"></figure>
+                        <a href="~/Auth/Login" class="signup-image-link"><i class="mdi mdi-keyboard-backspace"></i> Назад</a>
+                    </div>
 
-        <form asp-action="Register" class="signupForm">
-            <h2>Sign Up</h2>
-            <ul class="noBullet">
-                <li>
-                    <label for="username"></label>
-                    <input type="text" class="inputFields" id="username" name="UserName" placeholder="UserName" value="" required />
-                    <span asp-validation-for="UserName" class="text-danger"></span>
-                </li>
-                <li>
-                    <label for="email"></label>
-                    <input type="email" class="inputFields" id="email" name="UserEmail" placeholder="your.mail@gmail.com" value="" required />
-                    <span asp-validation-for="UserEmail" class="text-danger"></span>
-                </li>
-                <li>
-                    <label for="password"></label>
-                    <input type="password" class="inputFields" id="password" name="UserPassword" placeholder="Password" value="" required />
-                    <span asp-validation-for="UserPassword" class="text-danger"></span>
-                </li>
-                <li>
-                    <label for="confirmPassword"></label>
-                    <input type="password" class="inputFields" id="confirmPassword" name="ConfirmPassword" placeholder="ConfirmPassword" value="" required />
-                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                </li>
-                <li id="center-btn">
-                    <button type="submit" id="join-btn" name="join">Join</button>
-                </li>
-            </ul>
-        </form>
+                    <div class="signup-form align-self-center justify-content-center">
+                        <h2 class="form-title text-center">Реєстрація</h2>
+                        <form asp-action="Register" class="register-form">
+                            <div class="form-group">
+                                <label for="username"><i class="mdi mdi-account material-icons-name"></i></label>
+                                <input type="text" id="username" name="UserName" placeholder="UserName" />
+                            </div>
+                            <div class="form-group">
+                                <label for="userEmail"><i class="mdi mdi-email-outline material-icons-name"></i></label>
+                                <input type="text" id="userEmail" name="UserEmail" placeholder="your.mail@gmail.com" />
+                            </div>
+                            <div class="form-group">
+                                <label for="password" toggle="#password" class="mdi mdi-eye toggle-password"></label>
+                                <input type="password" id="password" name="UserPassword" placeholder="Password" />
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword" toggle="#confirmPassword" class="mdi mdi-eye toggle-password"></label>
+                                <input type="password" id="confirmPassword" name="ConfirmPassword" placeholder="ConfirmPassword" />
+                            </div>
+                            <div  class="text-center p-3">
+                                <button type="submit" class="btn btn-gradient-info btn-rounded btn-fw">Зареєструватись</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/forms/js/jquery.min.js"></script>
+    <script src="~/forms/js/forms.js"></script>
 
 </body>
 </html>

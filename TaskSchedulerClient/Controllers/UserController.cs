@@ -16,7 +16,7 @@ namespace TaskSchedulerClient.Controllers
 
         private readonly IConfiguration _configuration;
         private readonly Cryptography _cryptography;
-        private readonly User user;
+        private  User user;
         private ICollection<Assignment> assignments;
 
         public ICollection<Assignment> Assignments
@@ -82,7 +82,8 @@ namespace TaskSchedulerClient.Controllers
         }
         #endregion
 
-        public IActionResult PersonaAccount()
+        #region *** Action CRUD User ***
+        public IActionResult PersonalAccount()
         {
             _cryptography.RSA_Decrypt_IUser(user);
 
@@ -94,42 +95,58 @@ namespace TaskSchedulerClient.Controllers
             return View(viewModel);
         }
 
-        #region *** Action CRUD User ***
-
-
         #region *** Update ***
 
-        public async Task<IActionResult> UpdateUserObj(UserEditModel model)
+        public IActionResult UpdateUser(User User, int id)
         {
-            try
-            {
-                HttpClient client = ConnectToApi();
-
-                var user = GetUser(client);
-
-                UpdateUserObject(user, model);
-                await PutAsync(model, client);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return View(model);
-            }
-            return RedirectToAction("Index");
+            _cryptography.RSA_Decrypt_IUser(user);
+            User = user;
+            return View(User);
         }
 
-        private static void UpdateUserObject(User user,
-            UserEditModel model)
+        [HttpPost]
+        public async Task<IActionResult> UpdateUser(User user)
         {
-            user.UserName = model.UserName;
-            user.UserEmail = model.UserEmail;
-            user.UserPassword = model.UserPassword;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await UpdateData(user);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
+            return RedirectToAction("PersonalAccount");
         }
 
-        private async Task PutAsync(UserEditModel user, HttpClient client)
+        private async Task UpdateData(User user)
+        {
+            HttpClient client = ConnectToApi();
+            CreateUpdateUserObj(user);
+            await PutAsync(user, client);
+        }
+
+        private static object CreateUpdateUserObj(User user)
+        {
+            User entityObject = new()
+            {
+                UserName = user.UserName,
+                UserEmail = user.UserEmail,
+                UserPassword = user.UserPassword,
+            };
+            return entityObject;
+        }
+
+        private async Task PutAsync(User user, HttpClient client)
         {
             await client.PutAsJsonAsync(_configuration["ConnectionAPI:Path"] +
-                "/api/User/UpdateUser", user);
+                "/api/User/UpdateUser", _cryptography.RSAEncryptIUser(user, _configuration["APIkey"]));
         }
         #endregion
 
@@ -151,6 +168,16 @@ namespace TaskSchedulerClient.Controllers
         }
 
         #endregion
+
+        #endregion
+
+        #region *** LogOut ***
+
+        [HttpGet]
+        public IActionResult LogOut()
+        {
+            return RedirectToAction("Login", "Auth");
+        }
 
         #endregion
     }

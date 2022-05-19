@@ -23,7 +23,6 @@ namespace TaskSchedulerClient.Controllers
 
         private readonly IConfiguration _configuration;
         private IEnumerable<AssignmentEditModel> AssignmentEditModels { get; set; }
-
         private ICollection<Assignment> assignments;
         private readonly User user;
 
@@ -98,18 +97,20 @@ namespace TaskSchedulerClient.Controllers
         #region *** Detail ***
 
         public IActionResult Index(string searchName,
-            DateTime? startDate, DateTime? endDate,
+            string startDate, string endDate,
             SortingState sortOrder = SortingState.NameAsc)
         {
-            
-            SortingAssignment(sortOrder);
+
+            IEnumerable<Assignment> newAssignments = from m in assignments
+                                                     select m;
+            newAssignments = SortingAssignment(sortOrder, newAssignments);
+            newAssignments = FilterAssigments(startDate, endDate, searchName, newAssignments);
 
             IndexModel viewModel = new()
             {
-                //Assignments = assignments,
                 FilterViewModel = new FilterModel(startDate, endDate, searchName),
-                SortViewModel = new SortingModel(sortOrder), 
-                Assignments = FilterAssigments(startDate, endDate, searchName),                           
+                SortViewModel = new SortingModel(sortOrder),
+                Assignments = newAssignments,
                 Users = user,
             };
 
@@ -118,42 +119,45 @@ namespace TaskSchedulerClient.Controllers
 
         #region *** Sort & Filter
 
-        private IEnumerable<Assignment> FilterAssigments(DateTime? startDate, 
-            DateTime? endDate, string searchName)
+        private static IEnumerable<Assignment> FilterAssigments(string startDate,
+            string endDate, string searchName, IEnumerable<Assignment> assignment)
         {
-            var assignment = from m in assignments
-                             select m;
 
             if (!String.IsNullOrEmpty(searchName))
             {
                 assignment = assignment.Where(s => s.AssignmentName!
                 .StartsWith(searchName, StringComparison.InvariantCultureIgnoreCase));
             }
-            if (startDate != null)
+            if (!String.IsNullOrEmpty(startDate))
             {
-                assignment = assignment.Where(e => e.AssignmentTime >= startDate);
+                assignment = assignment.Where(e => e.AssignmentTime >= DateTime.Parse(startDate));
             }
-            if (endDate != null)
+            if (!String.IsNullOrEmpty(endDate))
             {
-                assignment = assignment.Where(e => e.AssignmentTime <= endDate);
+                assignment = assignment.Where(e => e.AssignmentTime <= DateTime.Parse(endDate));
             }
 
             return assignment;
         }
-        
-        private void SortingAssignment(SortingState sortOrder)
+
+        private static List<Assignment> SortingAssignment(
+            SortingState sortOrder, IEnumerable<Assignment> assignment)
         {
-            assignments = sortOrder switch
+            var assignments = sortOrder switch
             {
-                SortingState.NameDesc => assignments.OrderByDescending(s => s.AssignmentName).ToList(),
-                SortingState.DateAsc => assignments.OrderBy(s => s.AssignmentTime).ToList(),
-                SortingState.DateDesc => assignments.OrderByDescending(s => s.AssignmentTime).ToList(),
-                SortingState.StateAsc => assignments.OrderBy(s => s.AssignmentState).ToList(),
-                SortingState.StateDesc => assignments.OrderByDescending(s => s.AssignmentState).ToList(),
-                _ => assignments.OrderBy(s => s.AssignmentName).ToList(),
+                SortingState.NameDesc => assignment.
+                OrderByDescending(s => s.AssignmentName).ToList(),
+                SortingState.DateAsc => assignment.
+                OrderBy(s => s.AssignmentTime).ToList(),
+                SortingState.DateDesc => assignment.
+                OrderByDescending(s => s.AssignmentTime).ToList(),
+                SortingState.StateAsc => assignment.
+                OrderBy(s => s.AssignmentState).ToList(),
+                SortingState.StateDesc => assignment.
+                OrderByDescending(s => s.AssignmentState).ToList(),
+                _ => assignment.OrderBy(s => s.AssignmentName).ToList(),
             };
-
-
+            return assignments;
         }
 
         #endregion
@@ -209,18 +213,8 @@ namespace TaskSchedulerClient.Controllers
         private async Task UpdateData(Assignment assignment)
         {
             HttpClient client = ConnectToApi();
-
-            var entityObj = Assignments.
-                First(e => e.AssignmentId == assignment.AssignmentId);
-
             UpdateAssignmentUserObj(assignment);
             await PutAsync(assignment, client);
-        }
-
-        private async Task PutAsync(Assignment assignment, HttpClient client)
-        {
-            await client.PutAsJsonAsync(_configuration["ConnectionAPI:Path"] +
-                "/api/Assignment/UpdateAssignment", assignment);
         }
 
         private static object UpdateAssignmentUserObj(Assignment assignment)
@@ -234,11 +228,22 @@ namespace TaskSchedulerClient.Controllers
                 UserId = assignment.UserId,
             };
             return entityObject;
+        }
 
+        private async Task PutAsync(Assignment assignment, HttpClient client)
+        {
+            await client.PutAsJsonAsync(_configuration["ConnectionAPI:Path"] +
+                "/api/Assignment/UpdateAssignment", assignment);
         }
         #endregion
 
         #region *** Create ***
+        private async Task AddData(Assignment assignment)
+        {
+            HttpClient client = ConnectToApi();
+            CreateAssignmentUserObj(assignment);
+            await PostAsync(assignment, client);
+        }
 
         private static object CreateAssignmentUserObj(Assignment assignment)
         {
@@ -251,14 +256,6 @@ namespace TaskSchedulerClient.Controllers
                 UserId = assignment.UserId
             };
             return entityObject;
-        }
-
-        private async Task AddData(Assignment assignment)
-        {
-            HttpClient client = ConnectToApi();
-
-            CreateAssignmentUserObj(assignment);
-            await PostAsync(assignment, client);
         }
 
         private async Task PostAsync(Assignment assignment, HttpClient client)
@@ -350,10 +347,8 @@ namespace TaskSchedulerClient.Controllers
                 await DeleteAsync(assignment.AssignmentId, client);
             }
         }
-
         #endregion
 
         #endregion
-
     }
 }

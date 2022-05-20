@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TaskSchedulerClient.CryptographyMethods;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TaskSchedulerClient
 {
@@ -38,6 +40,15 @@ namespace TaskSchedulerClient
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseStatusCodePages(async statusCodeContext =>
+            {
+                // using static System.Net.Mime.MediaTypeNames;
+                statusCodeContext.HttpContext.Response.ContentType = Text.Plain;
+
+                await statusCodeContext.HttpContext.Response.WriteAsync(
+                    $"Status Code Page: {statusCodeContext.HttpContext.Response.StatusCode}");
+            });
+
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();

@@ -32,10 +32,12 @@
                             <div class="form-group">
                                 <label for="username"><i class="mdi mdi-account material-icons-name"></i></label>
                                 <input type="text" id="username" name="UserName" placeholder="UserName" />
+                                <span asp-validation-for="UserName"></span>
                             </div>
                             <div class="form-group">
                                 <label for="password" toggle="#password" class="mdi mdi-eye toggle-password"></label>
                                 <input type="password" id="password" name="UserPassword" placeholder="Password" />
+                                <span asp-validation-for="UserPassword"></span>
                             </div>
                             <div  class="text-center p-3">
                                 <button type="submit" class="btn btn-gradient-info btn-rounded btn-fw">Увійти</button>

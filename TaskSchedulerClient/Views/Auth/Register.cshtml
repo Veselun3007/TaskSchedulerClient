@@ -28,18 +28,22 @@
                             <div class="form-group">
                                 <label for="username"><i class="mdi mdi-account material-icons-name"></i></label>
                                 <input type="text" id="username" name="UserName" placeholder="UserName" />
+                                <span asp-validation-for="UserName"></span>
                             </div>
                             <div class="form-group">
                                 <label for="userEmail"><i class="mdi mdi-email-outline material-icons-name"></i></label>
                                 <input type="text" id="userEmail" name="UserEmail" placeholder="your.mail@gmail.com" />
+                                <span asp-validation-for="UserEmail"></span>
                             </div>
                             <div class="form-group">
                                 <label for="password" toggle="#password" class="mdi mdi-eye toggle-password"></label>
                                 <input type="password" id="password" name="UserPassword" placeholder="Password" />
+                                <span asp-validation-for="UserPassword"></span>
                             </div>
                             <div class="form-group">
                                 <label for="confirmPassword" toggle="#confirmPassword" class="mdi mdi-eye toggle-password"></label>
                                 <input type="password" id="confirmPassword" name="ConfirmPassword" placeholder="ConfirmPassword" />
+                                <span asp-validation-for="ConfirmPassword"></span>
                             </div>
                             <div  class="text-center p-3">
                                 <button type="submit" class="btn btn-gradient-info btn-rounded btn-fw">Зареєструватись</button>

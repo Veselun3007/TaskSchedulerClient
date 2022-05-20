@@ -24,17 +24,20 @@
                                 <input asp-for="UserId" type="hidden" class="form-control" />
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="UserName" class="col-form-label">Ім'я користувача</label>
-                                    <input asp-for="UserName" class="form-control" id="AssignmentName" type="text" required />
+                                    <input asp-for="UserName" class="form-control" id="AssignmentName" type="text"  />
+                                    <span asp-validation-for="UserName"></span>
                                 </div>
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="UserEmail" class="col-form-label">Адреса електроної пошти</label>
                                     <input asp-for="UserEmail" type="email" id="AssignmentTime" class="form-control" />
+                                    <span asp-validation-for="UserEmail"></span>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 form-group mb-3">
                                     <label for="UserPassword" class="col-form-label">Пароль</label>
-                                    <textarea asp-for="UserPassword" id="AssignmentDescription" class="form-control" placeholder="Write your description"></textarea>
+                                    <input asp-for="UserPassword" id="UserPassword" class="form-control"/>
+                                    <span asp-validation-for="UserPassword"></span>
                                 </div>
                             </div>
                             <input asp-for="UserId" type="hidden" />

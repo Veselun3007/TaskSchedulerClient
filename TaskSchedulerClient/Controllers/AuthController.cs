@@ -19,7 +19,6 @@ namespace TaskSchedulerClient.Controllers
 
     public class AuthController : Controller
     {
-
         #region *** Fields + Сonstructor ***
 
         private readonly IConfiguration _configuration;
@@ -70,15 +69,15 @@ namespace TaskSchedulerClient.Controllers
                 if (!response.IsSuccessStatusCode) throw new ServerException(response);
                 Dictionary<string, string> dictionaryResult = ExtractToken(response);
                 _configuration["JWTtoken"] = dictionaryResult["token"];
-
                 return RedirectToAction("Index", "Assignment");
             }
             catch (ServerException ex)
             {
                 ErrorInfo.SetServerErrors(ErrorInfo, ex.ResponseMessage);
-                ModelState.AddModelError("", ErrorInfo.ServerError);
-                return View(loginModel);
+                ModelState.AddModelError("UserName", ErrorInfo.ServerError);
+                ModelState.AddModelError("UserPassword", ErrorInfo.ServerError);
             }
+            return View(loginModel);
         }
 
         private async Task<HttpResponseMessage> LogIn(LoginModel loginModel, HttpClient client)
@@ -87,7 +86,6 @@ namespace TaskSchedulerClient.Controllers
                 _configuration["ConnectionAPI:Path"] + "/api/Auth/Auth",
                 _cryptography.RSAEncryptIUser(loginModel, _configuration["APIkey"]));
         }
-
         private static object CreteLoginUserObj(LoginModel loginModel)
         {
             LoginModel entityObject = new()
@@ -121,39 +119,32 @@ namespace TaskSchedulerClient.Controllers
                 using var client = new HttpClient();
                 _cryptography.RSA_KeyGenerate();
                 await UserRegister(registerModel, client);
-
-                await GetToken(registerModel, client);
-
+                await AuthorizationUser(registerModel, client);
                 return RedirectToAction("Index", "Assignment");
             }
-            catch (Exception ex)
+            catch (ServerException ex)
             {
-                ModelState.AddModelError("", ex.Message);
-                return View(registerModel);
+                ErrorInfo.SetServerErrors(ErrorInfo, ex.ResponseMessage);
+                ModelState.AddModelError("UserName", ErrorInfo.ServerError);
+                ModelState.AddModelError("UserEmail", ErrorInfo.ServerError);
             }
+            return View(registerModel);
+        }
+
+        private async Task AuthorizationUser(RegisterModel registerModel, HttpClient client)
+        {
+            LoginModel loginModel = CreatAuthUser(registerModel);
+            HttpResponseMessage response = await SingUp(client, loginModel);
+            Dictionary<string, string> dictionaryResult = ExtractToken(response);
+            _configuration["JWTtoken"] = dictionaryResult["token"];
         }
 
         private async Task UserRegister(RegisterModel registerModel, HttpClient client)
         {
-            await client.PostAsJsonAsync(
+            HttpResponseMessage response = await client.PostAsJsonAsync(
                 _configuration["ConnectionAPI:Path"] + "/api/User/CreateUser", 
                 _cryptography.RSAEncryptIUser(registerModel, _configuration["APIkey"]));
-        }
-
-        /// <summary>
-        /// Метод, що отримує токен користувача 
-        /// при реєстації для подальшої роботи.
-        /// </summary>
-        /// <param name="registerModel"></param>
-        /// <param name="client"></param>
-        /// <returns>Повертає токен</returns>
-        private async Task GetToken(RegisterModel registerModel, HttpClient client)
-        {
-            LoginModel loginModel = CreatAuthUser(registerModel);
-            HttpResponseMessage response = await SingUp(client, loginModel);
-            
-            Dictionary<string, string> dictionaryResult = ExtractToken(response);
-            _configuration["JWTtoken"] = dictionaryResult["token"];
+            if (!response.IsSuccessStatusCode) throw new ServerException(response);
         }
         private async Task<HttpResponseMessage> SingUp(HttpClient client, LoginModel loginModel)
         {

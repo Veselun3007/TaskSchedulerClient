@@ -68,6 +68,7 @@ namespace TaskSchedulerClient.Controllers
                 HttpResponseMessage response = await LogIn(loginModel, client);
                 if (!response.IsSuccessStatusCode) throw new ServerException(response);
                 Dictionary<string, string> dictionaryResult = ExtractToken(response);
+
                 _configuration["JWTtoken"] = dictionaryResult["token"];
                 return RedirectToAction("Index", "Assignment");
             }

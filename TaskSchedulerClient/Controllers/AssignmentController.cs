@@ -53,7 +53,6 @@ namespace TaskSchedulerClient.Controllers
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.
                     AuthenticationHeaderValue("Bearer", _configuration["JWTtoken"]);
-
             return client;
         }
         #endregion

@@ -5,6 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Shared\404.cshtml" />
+    <Content Remove="Views\Shared\500.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\StatusCode\Error500.cshtml" />
+    <None Include="Views\StatusCode\Error404.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.14" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />

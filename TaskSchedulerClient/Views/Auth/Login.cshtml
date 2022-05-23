@@ -8,38 +8,48 @@
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" type="text/css" href="~/css/forms.css"/>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="~/css/profilePage/assets/vendors/mdi/css/materialdesignicons.min.css">   
+    <link rel="stylesheet" type="text/css" href="~/css/profilePage/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/profilePage/assets/css/style.css" />
+    <link rel="stylesheet" href="~/forms/forms.css" />
 </head>
+
 <body>
 
-    <h4>LoginModel</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-4">
-            <form asp-action="Login">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="UserName" class="control-label"></label>
-                    <input asp-for="UserName" class="form-control" />
-                    <span asp-validation-for="UserName" class="text-danger"></span>
+    <div class="main">
+        <section class="sign-in">
+            <div class="container">
+                <div class="signin-content">
+                    <div class="signin-image">
+                        <figure><img src="~/images/signin-image.jpg" alt="sing up image"></figure>
+                        <a href="~/Auth/Register" class="signup-image-link">Створити новий аккаунт</a>
+                    </div>
+
+                    <div class="signin-form align-self-center">
+                        <h2 class="form-title text-center">Увійти</h2>
+                        <form asp-action="Login" class="register-form" id="login-form">
+                            <div class="form-group">
+                                <label for="username"><i class="mdi mdi-account material-icons-name"></i></label>
+                                <input type="text" id="username" name="UserName" placeholder="UserName" />
+                                <span asp-validation-for="UserName"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="password" toggle="#password" class="mdi mdi-eye toggle-password"></label>
+                                <input type="password" id="password" name="UserPassword" placeholder="Password" />
+                                <span asp-validation-for="UserPassword"></span>
+                            </div>
+                            <div  class="text-center p-3">
+                                <button type="submit" class="btn btn-gradient-info btn-rounded btn-fw">Увійти</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label asp-for="UserPassword" class="control-label"></label>
-                    <input asp-for="UserPassword" class="form-control" />
-                    <span asp-validation-for="UserPassword" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Відправити" class="btn btn-primary" />
-                </div>
-            </form>
-        </div>
+            </div>
+        </section>
     </div>
-
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    }
-
+    <script src="~/forms/js/jquery.min.js"></script>
+    <script src="~/forms/js/forms.js"></script>
 </body>
 </html>
+

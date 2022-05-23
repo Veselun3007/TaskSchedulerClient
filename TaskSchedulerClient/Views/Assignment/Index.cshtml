@@ -1,0 +1,294 @@
+﻿@using TaskSchedulerClient.Models
+@model IndexModel
+@{
+    Layout = null;
+}
+@{
+    int all = Model.Assignments.Count();
+    int failed = Model.Assignments.Count(e => e?.AssignmentState == false);
+    int done = Model.Assignments.Count(e => e?.AssignmentState == true);
+    int isPerformed = Model.Assignments.Count(e => e?.AssignmentState == null);
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <!-- Style -->
+    <link rel="stylesheet" type="text/css" 
+    href="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.min.css" />
+    <link rel="stylesheet" type="text/css" 
+    href="~/css/personalOffice/style.css">
+    <link rel="stylesheet" type="text/css" 
+    href="~/css/personalOffice/card.css">
+    <link rel="stylesheet" type="text/css" 
+    href="~/css/personalOffice/buttons/delete.css" />
+    <link rel="stylesheet" type="text/css" 
+    href="~/css/personalOffice/buttons/edit.css" />
+    <link rel="stylesheet" type="text/css" 
+    href="~/css/personalOffice/buttons/create.css" />
+    <link rel="stylesheet" 
+    href="~/css/profilePage/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" 
+    href="~/css/profilePage/assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" 
+    href="~/css/profilePage/assets/css/style.css">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" 
+    href="~/css/profilePage/assets/images/favicon.ico" />
+</head>
+<body>
+    <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+            <a class="navbar-brand brand-logo" href="index.html"><img src="~/images/Logo.svg" alt="Task" /></a>       
+            <a class="navbar-brand brand-logo-mini" href="index.html">Tasks</a>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                <span class="mdi mdi-menu"></span>
+            </button>
+            <div class="search-field d-none d-md-block">
+                <form class="d-flex align-items-center h-100" asp-controller="Assignment" asp-action="Index">
+                    <div class="input-group">
+                        <div class="input-group-prepend bg-transparent">
+                            <i class="input-group-text border-0 mdi mdi-magnify"></i>
+                        </div>
+                        <input class="form-control bg-transparent border-0" value="@Model.FilterViewModel.SelectedName" name="searchName" placeholder="Search task">
+                    </div>
+                </form>
+            </div>
+            <ul class="navbar-nav navbar-nav-right">
+                <li class="nav-item dropdown">
+                    <a class="nav-link count-indicator dropdown-toggle" id="sortDropdown" 
+                    href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="mdi mdi-format-line-spacing"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" 
+                    aria-labelledby="sortDropdown">
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" asp-action="Index" 
+                        asp-route-sortOrder="@(Model.SortViewModel.NameSortAsc)"
+                           asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                           asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                           asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                            <span> <strong>За назвою &#8593;</strong><br />Назва від А-Я</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" asp-action="Index" 
+                        asp-route-sortOrder="@(Model.SortViewModel.NameSortDesc)"
+                           asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                           asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                           asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                            <span> <strong>За назвою &#8595;</strong><br />Назва від Я-А</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" asp-action="Index" 
+                        asp-route-sortOrder="@(Model.SortViewModel.DateSortAsc)"
+                           asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                           asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                           asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                            <span><strong>За датою &#8593;</strong><br />Дата від новішої</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" asp-action="Index" 
+                        asp-route-sortOrder="@(Model.SortViewModel.DateSortDesc)"
+                           asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                           asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                           asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                            <span><strong>За датою &#8595;</strong><br />Дата від давнішої</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+
+                        <a class="dropdown-item" asp-action="Index" 
+                        asp-route-sortOrder="@(Model.SortViewModel.StateSortAsc)"
+                           asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                           asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                           asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                            <span><strong>За станом виконання &#8593;</strong><br />
+                                Статус від Виконується до Виконано</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" asp-action="Index" 
+                        asp-route-sortOrder="@(Model.SortViewModel.StateSortDesc)"
+                           asp-route-searchName="@(Model.FilterViewModel.SelectedName)"
+                           asp-route-startDate="@(Model.FilterViewModel.StartDate)"
+                           asp-route-endDate="@(Model.FilterViewModel.EndDate)">
+                            <span><strong>За станом виконання &#8595;</strong><br />
+                                Статус від Виконано до Виконується</span>
+                        </a>
+                    </div>
+                </li>
+                <li class="nav-item nav-profile dropdown">
+                    <a class="nav-link dropdown-toggle" id="profileDropdown" 
+                    href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="nav-profile-text">
+                            <p class="mb-1 text-black">@(Model.Users.UserName)</p>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="~/Assignment/Index">
+                            <i class="mdi mdi-cached me-2 text-success"></i> Оновити завдання
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="~/Assignment/LogOut">
+                            <i class="mdi mdi-logout me-2 text-primary"></i> Вийти
+                        </a>
+                    </div>
+                </li>
+                <li class="nav-item d-none d-lg-block full-screen-link">
+                    <a class="btnDelete nav-link" id="btnDelete" href='javascript:;'>
+                        <i class="mdi mdi-delete"></i>
+                    </a>
+                </li>
+                <li class="nav-item d-none d-lg-block full-screen-link">
+                    <a class="nav-link"><i class="mdi mdi-fullscreen" id="fullscreen-button"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container-fluid page-body-wrapper">
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+            <ul class="nav">
+                <li class="nav-item nav-profile">
+                    <a href="#" class="nav-link">
+                        <div class="nav-profile-text d-flex flex-column">
+                            <span class="font-weight-bold mb-2">@(Model.Users.UserName)</span>
+                        </div>
+                        <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/User/PersonalAccount">
+                        <span class="menu-title">Кабінет</span>
+                        <i class="mdi mdi-contacts menu-icon"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h3 class="page-title">
+                        <a asp-action="Edit" class="a-create">
+                            <text class="a-create__text">Додати</text>
+                            <span class="a-create__icon"><ion-icon name="add-outline"></ion-icon></span>
+                        </a>
+                    </h3>
+                    <nav aria-label="breadcrumb">
+                        <div class="search-field d-none d-md-block">
+                            <ul class="breadcrumb">
+                                <form class="d-flex align-items-center h-100" 
+                                asp-controller="Assignment" asp-action="Index">
+                                <li class="breadcrumb-item " aria-current="page">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend bg-transparent">
+                                            <i class="input-group-text border-0 mdi mdi-calendar-clock">Від</i>
+                                        </div>
+                                        <input class="form-control bg-transparent border-0" 
+                                        value="@Model.FilterViewModel.StartDate" name="startDate" 
+                                        type="text" placeholder="07.06.2022 10:00:00" 
+                                        pattern="[0-9]{2}.[0-9]{2}.[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}">              
+                                    </div>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend bg-transparent">
+                                            <i class="input-group-text border-0 mdi mdi-calendar-clock">До</i>
+                                        </div>
+                                        <input class="form-control bg-transparent border-0" 
+                                        value="@Model.FilterViewModel.EndDate" name="endDate" type="text"
+                                        placeholder="07.06.2022 10:00:00"
+                                        pattern="[0-9]{2}.[0-9]{2}.[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}">
+                                    </div>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <div class="input-group">
+                                        <button type="submit" class="btn btn-inverse-success btn-icon">
+                                            <i class="mdi mdi-magnify"></i>
+                                        </button>
+                                    </div>
+                                </li>
+                                </form>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+                <div class="row">
+                    <div class="card-columns">
+                        @foreach (var item in Model.Assignments)
+                        {
+                            <div class="col">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@item.AssignmentName</h5>
+                                        <p class="card-text"><small class="text-muted">@item.AssignmentTime</small></p>
+                                        <div class="form-group">
+
+                                            <form class="form-inline" asp-action="UpdateState" method="get">
+                                                <div class="input-group">
+                                                    <select class="form-control bg-transparent border-0" 
+                                                    id="AssignmentState" asp-for="@item.AssignmentState" name="AssignmentState" 
+                                                    class="form-control mb-2" aria-label=".form-select-lg example">
+                                                        <option value="null" selected="@(item.AssignmentState == null)">Виконується</option>
+                                                        <option value="true" selected="@(item.AssignmentState == true)">Виконано</option>
+                                                        <option value="false" selected="@(item.AssignmentState == false)">Не виконано</option>
+                                                    </select>
+                                                    <button class="btn btn-gradient-success btn-rounded btn-icon input-group-append" 
+                                                    type="submit" asp-route-id="@item.AssignmentId" asp-action="UpdateState" 
+                                                    asp-controller="Assignment"><i class="mdi mdi-checkbox-multiple-marked-outline"></i></button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <p class="card-text">@item.AssignmentDescription</p>
+                                        <div class="btn-toolbar" role="toolbar">
+                                            <div class="btn-group" role="group">
+                                                <a class="a-edit float-left button" asp-controller="Assignment" 
+                                                asp-action="Edit" asp-route-id="@item.AssignmentId">
+                                                    <text class="a-edit__text">Редагувати</text><span class="a-edit__icon">
+                                                        <ion-icon name="refresh-outline"></ion-icon>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                            <div class="btn-group" role="group">
+                                                <div class="price-wrap">
+                                                    <a class="a-delete float-right button" asp-controller="Assignment" 
+                                                    asp-action="Delete" asp-route-id="@item.AssignmentId">
+                                                        <span></span><text>Видалити</text>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="btn-group" role="group">
+                                                <div class="price-wrap">
+                                                    <input class="chkDelete" name="chkDeleteName" 
+                                                    type="checkbox" value="@item.AssignmentId">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/css/profilePage/assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="~/css/profilePage/assets/vendors/chart.js/Chart.min.js"></script>
+    <script src="~/css/profilePage/assets/js/jquery.cookie.js" type="text/javascript"></script>
+    <script src="~/css/profilePage/assets/js/off-canvas.js"></script>
+    <script src="~/css/profilePage/assets/js/hoverable-collapse.js"></script>
+    <script src="~/css/profilePage/assets/js/misc.js"></script>
+    <script src="~/css/profilePage/assets/js/card.js"></script>
+    <script type="text/javascript" src="~/js/personalOffice/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="~/js/personalOffice/popper.min.js"></script>
+    <script type="text/javascript" src="~/js/personalOffice/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/js/personalOffice/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="~/js/personalOffice/main.js"></script>
+    <script type="text/javascript" src="~/js/personalOffice/index.js"></script>
+    <script type="text/javascript" src="~/js/personalOffice/deleteMultiple.js"></script>
+    <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+</body>
+</html>

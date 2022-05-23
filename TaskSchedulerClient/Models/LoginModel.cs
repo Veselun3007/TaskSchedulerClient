@@ -1,12 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using TaskSchedulerClient.Models.Interfaces;
+using TaskShedulerDesktopClient.Data.Errors;
 
 namespace TaskSchedulerClient.Models
 {
+
     /// <summary>
     /// Клас, що описує модель аутентифікація
     /// </summary>
-    public class LoginModel
+    
+    public class LoginModel : IUser
     {
+        public ErrorInfo ErrorInfo { get; set; } = new ErrorInfo();
+        public LoginModel() {}
 
         [Display(Name = "Логін")]
         [Required(ErrorMessage = "Не вказаний логін")]
@@ -17,13 +26,5 @@ namespace TaskSchedulerClient.Models
         [DataType(DataType.Password)]
         public string UserPassword { get; set; }
 
-        public static explicit operator LoginModel(User obj)
-        {
-            return new LoginModel()
-            {
-                UserName = obj.UserName,
-                UserPassword = obj.UserPassword,
-            };
-        }
     }
 }

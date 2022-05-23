@@ -73,6 +73,7 @@ namespace TaskSchedulerClient.Controllers
 
             List<Assignment> assignments = JsonConvert.
                 DeserializeObject<List<Assignment>>(result);
+          
             return assignments;
         }
         #endregion
@@ -245,27 +246,44 @@ namespace TaskSchedulerClient.Controllers
         private async Task AddData(Assignment assignment)
         {
             HttpClient client = ConnectToApi();
-            CreateAssignmentUserObj(assignment);
-            await PostAsync(assignment, client);
+            await CreateNewTask(assignment, client);
         }
 
-        private static object CreateAssignmentUserObj(Assignment assignment)
+        private async Task CreateNewTask(Assignment assignment, HttpClient client)
         {
-            Assignment entityObject = new()
+            if (assignment.AssignmentDescription == null)
             {
-                AssignmentName = assignment.AssignmentName,
-                AssignmentDescription = assignment.AssignmentDescription,
-                AssignmentTime = assignment.AssignmentTime,
-                AssignmentState = assignment.AssignmentState,
-                UserId = assignment.UserId
-            };
-            return entityObject;
+                if (assignment.AssignmentTime <= DateTime.Now)
+                {
+                    Assignment entityObject = new()
+                    {
+                        AssignmentName = assignment.AssignmentName,
+                        AssignmentDescription = "",
+                        AssignmentTime = assignment.AssignmentTime,
+                        AssignmentState = false,
+                        UserId = assignment.UserId
+                    };
+                    await PostAsync(entityObject, client);
+                }
+                else
+                {
+                    Assignment entityObject = new()
+                    {
+                        AssignmentName = assignment.AssignmentName,
+                        AssignmentDescription = "",
+                        AssignmentTime = assignment.AssignmentTime,
+                        AssignmentState = assignment.AssignmentState,
+                        UserId = assignment.UserId
+                    };
+                    await PostAsync(entityObject, client);
+                }
+            }
         }
 
         private async Task PostAsync(Assignment assignment, HttpClient client)
         {
-            await client.PostAsJsonAsync(_configuration["ConnectionAPI:Path"] +
-                "/api/Assignment/CreateAssignment", assignment);
+                await client.PostAsJsonAsync(_configuration["ConnectionAPI:Path"] +
+                    "/api/Assignment/CreateAssignment", assignment);   
         }
 
         #endregion

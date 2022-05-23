@@ -18,7 +18,7 @@ namespace TaskSchedulerClient.Controllers
         private readonly IConfiguration _configuration;
         private readonly Cryptography _cryptography;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private  User user;
+        private readonly User user;
         private ICollection<Assignment> assignments;
 
         public ICollection<Assignment> Assignments

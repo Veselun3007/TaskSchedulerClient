@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using System.IO;
 using TaskSchedulerClient.CryptographyMethods;
@@ -26,6 +27,9 @@ namespace TaskSchedulerClient
             services.AddControllersWithViews();
             services.AddTransient<Cryptography>();
             services.AddHttpClient();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddDistributedMemoryCache();
+            services.AddSession();
 
         }
 
@@ -45,6 +49,8 @@ namespace TaskSchedulerClient
             app.UseStatusCodePagesWithRedirects("/StatusCode/Error{0}");
 
             app.UseHttpsRedirection();
+
+            app.UseSession();
 
             app.UseStaticFiles();
 

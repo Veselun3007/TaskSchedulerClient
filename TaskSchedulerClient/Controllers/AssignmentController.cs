@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
@@ -24,6 +25,7 @@ namespace TaskSchedulerClient.Controllers
         private readonly IConfiguration _configuration;
         private IEnumerable<AssignmentEditModel> AssignmentEditModels { get; set; }
         private ICollection<Assignment> assignments;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly User user;
 
         public ICollection<Assignment> Assignments
@@ -37,9 +39,12 @@ namespace TaskSchedulerClient.Controllers
             }
         }
 
-        public AssignmentController(IConfiguration configuration)
+
+        public AssignmentController(IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
             HttpClient client = ConnectToApi();
             Assignments = GetAllAssignment(client);
             user = GetUser(client);
@@ -52,7 +57,7 @@ namespace TaskSchedulerClient.Controllers
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.
-                    AuthenticationHeaderValue("Bearer", _configuration["JWTtoken"]);
+                    AuthenticationHeaderValue("Bearer", _httpContextAccessor.HttpContext.Session.GetString("token"));
             return client;
         }
         #endregion
@@ -99,7 +104,7 @@ namespace TaskSchedulerClient.Controllers
             string startDate, string endDate,
             SortingState sortOrder = SortingState.NameAsc)
         {
-
+            
             IEnumerable<Assignment> newAssignments = from m in assignments
                                                      select m;
             newAssignments = SortingAssignment(sortOrder, newAssignments);

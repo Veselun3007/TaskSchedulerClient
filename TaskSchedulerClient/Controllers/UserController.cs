@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
@@ -16,6 +17,7 @@ namespace TaskSchedulerClient.Controllers
 
         private readonly IConfiguration _configuration;
         private readonly Cryptography _cryptography;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private  User user;
         private ICollection<Assignment> assignments;
 
@@ -26,10 +28,11 @@ namespace TaskSchedulerClient.Controllers
         }
 
         public UserController(IConfiguration configuration,
-            Cryptography cryptography)
+            Cryptography cryptography, IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
             _cryptography = cryptography;
+            _httpContextAccessor = httpContextAccessor;
             HttpClient client = ConnectToApi();
             Assignments = GetAllAssignment(client);
             user = GetUser(client);
@@ -42,7 +45,7 @@ namespace TaskSchedulerClient.Controllers
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.
-                    AuthenticationHeaderValue("Bearer", _configuration["JWTtoken"]);
+                    AuthenticationHeaderValue("Bearer", _httpContextAccessor.HttpContext.Session.GetString("token"));
 
             return client;
         }

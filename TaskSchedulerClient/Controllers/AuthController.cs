@@ -10,6 +10,7 @@ using TaskSchedulerClient.CryptographyMethods;
 using Microsoft.AspNetCore.Mvc;
 using TaskSchedulerClient.ErrorHandling;
 using TaskShedulerDesktopClient.Data.Errors;
+using Microsoft.AspNetCore.Http;
 
 namespace TaskSchedulerClient.Controllers
 {
@@ -21,15 +22,18 @@ namespace TaskSchedulerClient.Controllers
     {
         #region *** Fields + Сonstructor ***
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
         private readonly Cryptography _cryptography;
+
         public ErrorInfo ErrorInfo { get; set; } = new ErrorInfo();
 
         public AuthController(IConfiguration configuration, 
-            Cryptography cryptography)
+            Cryptography cryptography, IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
             _cryptography = cryptography;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -68,8 +72,7 @@ namespace TaskSchedulerClient.Controllers
                 HttpResponseMessage response = await LogIn(loginModel, client);
                 if (!response.IsSuccessStatusCode) throw new ServerException(response);
                 Dictionary<string, string> dictionaryResult = ExtractToken(response);
-
-                _configuration["JWTtoken"] = dictionaryResult["token"];
+                _httpContextAccessor.HttpContext.Session.SetString("token", dictionaryResult["token"]);
                 return RedirectToAction("Index", "Assignment");
             }
             catch (ServerException ex)
@@ -131,15 +134,14 @@ namespace TaskSchedulerClient.Controllers
             }
             return View(registerModel);
         }
-
         private async Task AuthorizationUser(RegisterModel registerModel, HttpClient client)
         {
             LoginModel loginModel = CreatAuthUser(registerModel);
             HttpResponseMessage response = await SingUp(client, loginModel);
             Dictionary<string, string> dictionaryResult = ExtractToken(response);
-            _configuration["JWTtoken"] = dictionaryResult["token"];
+            HttpContext.Response.Cookies.Append("token", dictionaryResult["token"],
+                    new CookieOptions { HttpOnly = true });
         }
-
         private async Task UserRegister(RegisterModel registerModel, HttpClient client)
         {
             HttpResponseMessage response = await client.PostAsJsonAsync(

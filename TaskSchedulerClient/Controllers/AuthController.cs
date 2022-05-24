@@ -56,7 +56,6 @@ namespace TaskSchedulerClient.Controllers
             await GetAPIPublicKey();
             return View();
         }
-
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
@@ -83,7 +82,6 @@ namespace TaskSchedulerClient.Controllers
             }
             return View(loginModel);
         }
-
         private async Task<HttpResponseMessage> LogIn(LoginModel loginModel, HttpClient client)
         {
             return await client.PostAsJsonAsync( 
@@ -109,7 +107,6 @@ namespace TaskSchedulerClient.Controllers
         {
             return View();
         }
-
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel registerModel)
         {
@@ -139,8 +136,7 @@ namespace TaskSchedulerClient.Controllers
             LoginModel loginModel = CreatAuthUser(registerModel);
             HttpResponseMessage response = await SingUp(client, loginModel);
             Dictionary<string, string> dictionaryResult = ExtractToken(response);
-            HttpContext.Response.Cookies.Append("token", dictionaryResult["token"],
-                    new CookieOptions { HttpOnly = true });
+            _httpContextAccessor.HttpContext.Session.SetString("token", dictionaryResult["token"]);
         }
         private async Task UserRegister(RegisterModel registerModel, HttpClient client)
         {
@@ -185,6 +181,5 @@ namespace TaskSchedulerClient.Controllers
             return JsonConvert.DeserializeObject
                 <Dictionary<string, string>>(response.Content.ReadAsStringAsync().Result);
         }
-
     }
 }

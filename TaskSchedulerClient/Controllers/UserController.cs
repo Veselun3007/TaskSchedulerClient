@@ -179,6 +179,7 @@ namespace TaskSchedulerClient.Controllers
         [HttpGet]
         public IActionResult LogOut()
         {
+            _httpContextAccessor.HttpContext.Session.Remove("token");
             return RedirectToAction("Login", "Auth");
         }
 

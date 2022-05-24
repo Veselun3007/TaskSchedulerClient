@@ -25,9 +25,9 @@ namespace TaskSchedulerClient.Models
 
         [Display(Name = "Пароль")]
         [Required(ErrorMessage = "Не вказаний пароль")]
-        //[RegularExpression(@"^(?=.{10,}$)(?=(?:.*?[A-Z]){2})(?=.*?[a-z])(?=(?:.*?[0-9]){2}).*$",
-        //    ErrorMessage = "Пароль має містити 10 символів та як мінімум 2 великі та 1 " +
-        //    "рядкову літеру латинського алфавіту, 2 цифри")]
+        [RegularExpression(@"^(?=.{8,}$)(?=(?:.*?[A-Z]){2})(?=.*?[a-z])(?=(?:.*?[0-9]){2}).*$",
+            ErrorMessage = "Пароль має містити 10 символів та як мінімум 2 великі та 1 " +
+            "рядкову літеру латинського алфавіту, 2 цифри")]
         [DataType(DataType.Password)]
         public string UserPassword { get; set; }
 

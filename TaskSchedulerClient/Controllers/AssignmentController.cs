@@ -19,7 +19,6 @@ namespace TaskSchedulerClient.Controllers
     /// </summary>
     public class AssignmentController : Controller
     {
-
         #region *** Fields + Сonstructor ***
 
         private readonly IConfiguration _configuration;
@@ -105,7 +104,7 @@ namespace TaskSchedulerClient.Controllers
             string startDate, string endDate,
             SortingState sortOrder = SortingState.NameAsc)
         {
-            
+
             IEnumerable<Assignment> newAssignments = from m in assignments
                                                      select m;
             newAssignments = SortingAssignment(sortOrder, newAssignments);
@@ -170,7 +169,6 @@ namespace TaskSchedulerClient.Controllers
         #endregion
 
         #region *** Create & Update ***
-
         public IActionResult Edit(Assignment assignment, int id)
         {
             if (id != 0)
@@ -203,7 +201,6 @@ namespace TaskSchedulerClient.Controllers
             }
             return RedirectToAction("Index");
         }
-
         private async Task SaveData(Assignment assignment)
         {
             if (assignment.AssignmentId == 0)
@@ -221,7 +218,6 @@ namespace TaskSchedulerClient.Controllers
             UpdateAssignmentUserObj(assignment);
             await PutAsync(assignment, client);
         }
-
         private static object UpdateAssignmentUserObj(Assignment assignment)
         {
             Assignment entityObject = new()
@@ -234,12 +230,11 @@ namespace TaskSchedulerClient.Controllers
             };
             return entityObject;
         }
-
         private async Task PutAsync(Assignment assignment, HttpClient client)
         {
             await client.PutAsJsonAsync(_configuration["ConnectionAPI:Path"] +
                 "/api/Assignment/UpdateAssignment", assignment);
-        }
+        }      
         #endregion
 
         #region *** Create ***
@@ -278,6 +273,33 @@ namespace TaskSchedulerClient.Controllers
                     await PostAsync(entityObject, client);
                 }
             }
+            else
+            {
+                if (assignment.AssignmentTime <= DateTime.Now)
+                {
+                    Assignment entityObject = new()
+                    {
+                        AssignmentName = assignment.AssignmentName,
+                        AssignmentDescription = assignment.AssignmentDescription,
+                        AssignmentTime = assignment.AssignmentTime,
+                        AssignmentState = false,
+                        UserId = assignment.UserId
+                    };
+                    await PostAsync(entityObject, client);
+                }
+                else
+                {
+                    Assignment entityObject = new()
+                    {
+                        AssignmentName = assignment.AssignmentName,
+                        AssignmentDescription = assignment.AssignmentDescription,
+                        AssignmentTime = assignment.AssignmentTime,
+                        AssignmentState = assignment.AssignmentState,
+                        UserId = assignment.UserId
+                    };
+                    await PostAsync(entityObject, client);
+                }
+            }
         }
 
         private async Task PostAsync(Assignment assignment, HttpClient client)
@@ -300,7 +322,6 @@ namespace TaskSchedulerClient.Controllers
 
             return RedirectToAction("Index");
         }
-
         private async Task DeleteAsync(int id, HttpClient client)
         {
             await client.DeleteAsync(_configuration["ConnectionAPI:Path"] +
@@ -318,6 +339,7 @@ namespace TaskSchedulerClient.Controllers
         [HttpGet]
         public IActionResult LogOut()
         {
+            _httpContextAccessor.HttpContext.Session.Remove("token");
             return RedirectToAction("Login", "Auth");
         }
 

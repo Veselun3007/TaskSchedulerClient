@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -132,12 +133,11 @@ namespace TaskSchedulerClient.Controllers
                 assignment = assignment.Where(s => s.AssignmentName!
                 .StartsWith(searchName, StringComparison.InvariantCultureIgnoreCase));
             }
-            if (!String.IsNullOrEmpty(startDate))
-            {
+            if (!String.IsNullOrEmpty(startDate)) {
+
                 assignment = assignment.Where(e => e.AssignmentTime >= DateTime.Parse(startDate));
             }
-            if (!String.IsNullOrEmpty(endDate))
-            {
+            if (!String.IsNullOrEmpty(endDate)) {
                 assignment = assignment.Where(e => e.AssignmentTime <= DateTime.Parse(endDate));
             }
 
@@ -212,29 +212,39 @@ namespace TaskSchedulerClient.Controllers
         }
 
         #region *** Update ***
-        private async Task UpdateData(Assignment assignment)
-        {
+        private async Task UpdateData(Assignment assignment) {
             HttpClient client = ConnectToApi();
-            UpdateAssignmentUserObj(assignment);
-            await PutAsync(assignment, client);
+            await UpdateAssignmentUserObj(assignment, client);
+
         }
-        private static object UpdateAssignmentUserObj(Assignment assignment)
-        {
-            Assignment entityObject = new()
-            {
-                AssignmentName = assignment.AssignmentName,
-                AssignmentDescription = assignment.AssignmentDescription,
-                AssignmentTime = assignment.AssignmentTime,
-                AssignmentState = Convert.ToBoolean(assignment.AssignmentState),
-                UserId = assignment.UserId,
-            };
-            return entityObject;
+        private async Task UpdateAssignmentUserObj(Assignment assignment, HttpClient client) {
+            if (assignment.AssignmentDescription == null) {
+                Assignment entityObject = new() {
+                    AssignmentId = assignment.AssignmentId,
+                    AssignmentName = assignment.AssignmentName,
+                    AssignmentDescription = "",
+                    AssignmentTime = assignment.AssignmentTime,
+                    AssignmentState = assignment.AssignmentState,
+                    UserId = assignment.UserId,
+                };
+                await PutAsync(entityObject, client);
+            }
+            else {
+                Assignment entityObject = new() {
+                    AssignmentId = assignment.AssignmentId,
+                    AssignmentName = assignment.AssignmentName,
+                    AssignmentDescription = assignment.AssignmentDescription,
+                    AssignmentTime = assignment.AssignmentTime,
+                    AssignmentState = assignment.AssignmentState,
+                    UserId = assignment.UserId,
+                };
+                await PutAsync(entityObject, client); ;
+            }
         }
-        private async Task PutAsync(Assignment assignment, HttpClient client)
-        {
+        private async Task PutAsync(Assignment assignment, HttpClient client) {
             await client.PutAsJsonAsync(_configuration["ConnectionAPI:Path"] +
                 "/api/Assignment/UpdateAssignment", assignment);
-        }      
+        }
         #endregion
 
         #region *** Create ***

@@ -17,6 +17,8 @@ namespace TaskSchedulerClient.Models
         [Required(ErrorMessage = "Відсутній логін")]
         [StringLength(50, MinimumLength = 3, 
             ErrorMessage = "Некоректна довжина логіну")]
+        [RegularExpression(@"\A[А - ЯA - ZЇІЄҐЬ._0 - 9]{1, 50}\z",
+            ErrorMessage = "Ім'я користувача містить заборонені символи")]
         public string UserName { get; set; }
 
         [Required(ErrorMessage = 

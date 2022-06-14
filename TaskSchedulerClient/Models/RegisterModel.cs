@@ -16,6 +16,8 @@ namespace TaskSchedulerClient.Models
         [Required(ErrorMessage = "Не вказаний логін")]
         [StringLength(50, MinimumLength = 3,
             ErrorMessage = "Введіть логін довжиною від 3 до 50 символів")]
+        [RegularExpression(@"\A[А - ЯA - ZЇІЄҐЬ._0 - 9]{3, 50}\z",
+            ErrorMessage = "Ім'я користувача містить заборонені символи")]
         public string UserName { get; set; }
 
         [Display(Name = "Електрона пошта")]
@@ -25,7 +27,7 @@ namespace TaskSchedulerClient.Models
 
         [Display(Name = "Пароль")]
         [Required(ErrorMessage = "Не вказаний пароль")]
-        [RegularExpression(@"^(?=.{8,}$)(?=(?:.*?[A-Z]){2})(?=.*?[a-z])(?=(?:.*?[0-9]){2}).*$",
+        [RegularExpression(@"^(?=.{10,}$)(?=(?:.*?[A-Z]){2})(?=.*?[a-z])(?=(?:.*?[0-9]){2}).*$",
             ErrorMessage = "Пароль має містити 10 символів та як мінімум 2 великі та 1 " +
             "рядкову літеру латинського алфавіту, 2 цифри")]
         [DataType(DataType.Password)]

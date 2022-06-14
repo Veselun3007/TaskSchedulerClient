@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -134,11 +135,12 @@ namespace TaskSchedulerClient.Controllers
             }
             if (!String.IsNullOrEmpty(startDate))
             {
-                assignment = assignment.Where(e => e.AssignmentTime >= DateTime.Parse(startDate));
+                
+                assignment = assignment.Where(e => Convert.ToDateTime(e.AssignmentTime, new CultureInfo("uk-ua")) >= DateTime.Parse(startDate));
             }
             if (!String.IsNullOrEmpty(endDate))
             {
-                assignment = assignment.Where(e => e.AssignmentTime <= DateTime.Parse(endDate));
+                assignment = assignment.Where(e => Convert.ToDateTime(e.AssignmentTime, new CultureInfo("uk-ua")) <= DateTime.Parse(endDate));
             }
 
             return assignment;
@@ -215,20 +217,37 @@ namespace TaskSchedulerClient.Controllers
         private async Task UpdateData(Assignment assignment)
         {
             HttpClient client = ConnectToApi();
-            UpdateAssignmentUserObj(assignment);
-            await PutAsync(assignment, client);
+            await UpdateAssignmentUserObj(assignment, client);
+            
         }
-        private static object UpdateAssignmentUserObj(Assignment assignment)
+        private async Task UpdateAssignmentUserObj(Assignment assignment, HttpClient client)
         {
-            Assignment entityObject = new()
+            if (assignment.AssignmentDescription == null)
             {
-                AssignmentName = assignment.AssignmentName,
-                AssignmentDescription = assignment.AssignmentDescription,
-                AssignmentTime = assignment.AssignmentTime,
-                AssignmentState = Convert.ToBoolean(assignment.AssignmentState),
-                UserId = assignment.UserId,
-            };
-            return entityObject;
+                Assignment entityObject = new()
+                {
+                    AssignmentId = assignment.AssignmentId,
+                    AssignmentName = assignment.AssignmentName,
+                    AssignmentDescription = "",
+                    AssignmentTime = assignment.AssignmentTime,
+                    AssignmentState = assignment.AssignmentState,
+                    UserId = assignment.UserId,
+                };
+                await PutAsync(entityObject, client);
+            }
+            else
+            {
+                Assignment entityObject = new()
+                {
+                    AssignmentId = assignment.AssignmentId,
+                    AssignmentName = assignment.AssignmentName,
+                    AssignmentDescription = assignment.AssignmentDescription,
+                    AssignmentTime = assignment.AssignmentTime,
+                    AssignmentState = assignment.AssignmentState,
+                    UserId = assignment.UserId,
+                };
+                await PutAsync(entityObject, client); 
+            }
         }
         private async Task PutAsync(Assignment assignment, HttpClient client)
         {
